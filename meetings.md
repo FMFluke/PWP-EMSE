@@ -13,7 +13,7 @@ Explained about the FoodPoint API we are going to develop and different applicat
 ### Action points
 *List here the actions points discussed with assistants*
 
-We forget to include the link for the BigOven API into the wiki and we added the links discussed in the meetings.
+We forget to include the link for the BigOven API into the wiki and we added the links as discussed in the meetings.
 
 ### Comments from staff
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*

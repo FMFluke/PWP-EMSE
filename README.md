@@ -15,6 +15,8 @@ All dependencies can be installed using `pip install` command followed by the na
 
 ## Creating the database
 The database can be created by running the following two lines of code from python console. (Assuming current directory is same with `database.py`)    
-    from database import db    
-    db.create_all()    
+```python
+from database import db    
+db.create_all()    
+```    
 Database will be stored in file name `test.db` at the same directory. The file's name can be changed by editing the line `app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"` in the `database.py`    

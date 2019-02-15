@@ -5,7 +5,7 @@ import tempfile
 import database
 from database import User, Recipe, Collection, Category, Ethnicity
 from sqlalchemy.engine import Engine
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, StatementError
 from sqlalchemy import event
 
 #Enforce Foreign key, This function is adapted from Exercise 1
@@ -37,11 +37,17 @@ def db_handle():
     os.close(db_fd)
     os.unlink(db_fname)
 
-def _get_user():
-    return User(
-        name="John Doe",
-        userName="johndoe"
-    )
+def _get_user(choice=1):
+    if choice == 1:
+        return User(
+           name="kirn",
+           userName="itzkirn"
+        )
+    else:
+        return User(
+           name="John Doe",
+           userName="johndoe"
+        )
 
 def _get_recipe(choice=1):
     if choice == 1:
@@ -52,7 +58,7 @@ def _get_recipe(choice=1):
         )
     else: #support only two options for now
         return Recipe(
-            title="Chicken Marsala",
+            title="Chicken Masala",
             description="I don't know",
             ingredients="chicken, tomato, something else"
         )
@@ -125,3 +131,123 @@ def test_create_instances(db_handle):
     assert db_collection in db_user.collections
     assert db_recipe in db_collection.recipes
     assert db_collection in db_recipe.collections
+
+
+def test_recipe_columns(db_handle):
+    """
+    Tests that a rating value only accepts floating point values Also tests
+    that description, ingredients and title  are mandatory but rating is optional for recipe.
+    """
+
+    recipe = _get_recipe()
+    recipe.rating = str(recipe.rating)+"k"
+    db_handle.session.add(recipe)
+    with pytest.raises(StatementError):
+        db_handle.session.commit()
+
+    db_handle.session.rollback()
+
+    recipe = _get_recipe()
+    recipe.description = None
+    db_handle.session.add(recipe)
+    with pytest.raises(IntegrityError):
+        db_handle.session.commit()
+
+    db_handle.session.rollback()
+
+    recipe = _get_recipe()
+    recipe.title = None
+    db_handle.session.add(recipe)
+    with pytest.raises(IntegrityError):
+        db_handle.session.commit()
+
+    db_handle.session.rollback()
+
+    recipe = _get_recipe()
+    recipe.ingredients = None
+    db_handle.session.add(recipe)
+    with pytest.raises(IntegrityError):
+        db_handle.session.commit()
+
+    db_handle.session.rollback()
+
+    recipe = _get_recipe()
+    recipe.rating = None
+    db_handle.session.add(recipe)
+    with pytest.raises(IntegrityError):
+        db_handle.session.commit()
+
+    db_handle.session.rollback()
+
+
+def test_username_unique(db_handle):
+    """
+    Tests that a username in user model is unique.
+    """
+    user_1 = _get_user()
+    user_2 = _get_user()
+    db_handle.session.add(user_1)
+    db_handle.session.add(user_2)
+    with pytest.raises(IntegrityError):
+        db_handle.session.commit()
+    db_handle.session.rollback()
+
+
+def test_updated_collection_name(db_handle):
+    """
+    Tests that collection name have been updated properly in collection model.
+    """
+    collection = _get_collection()
+    user = _get_user()
+    collection.user = user
+    collection.name = "my new collection"
+    db_handle.session.add(collection)
+    db_handle.session.commit()
+    db_collection = Collection.query.first()
+    assert db_collection.name == "my new collection"
+    db_handle.session.rollback()
+
+
+def test_updated_name_of_user(db_handle):
+    """
+    Tests that name of user have been updated properly in user model.
+    """
+    user = _get_user()
+    user.name = "laiq"
+    db_handle.session.add(user)
+    db_handle.session.commit()
+    db_user = User.query.first()
+    assert db_user.name == "laiq"
+    db_handle.session.rollback()
+
+
+def test_updated_description_of_recipe(db_handle):
+    """
+    Tests that description of recipe have been updated properly in user model.
+    """
+    recipe = _get_recipe()
+    ethnicity = _get_ethnicity()
+    category = _get_category()
+    recipe.category = category
+    recipe.ethnicity = ethnicity
+    recipe.description = "description updated"
+    db_handle.session.add(recipe)
+    db_handle.session.commit()
+    db_recipe = Recipe.query.first()
+    assert db_recipe.description == "description updated"
+    db_handle.session.rollback()
+
+
+def test_deleted_user(db_handle):
+    """
+    Tests that user have been properly removed from user model.
+    """
+    user = _get_user()
+    db_handle.session.delete(user)
+    with pytest.raises(StatementError):
+        db_handle.session.commit()
+    #db_user = User.query.filter_by(username='johndoe').first()
+    #assert user is None
+
+
+

@@ -56,7 +56,7 @@ Columns:
 - ingredients, STRING, Max Length 200, NOT NULL, contains ingredients of the recipe in text.
 - rating, FLOAT, Range 0-5, contains rating of the recipe.
 - ethnicityId, INTEGER, NOT NULL, id of ethnicity of this recipe with Foriegn key relation to Ethnicity table.
-- categoryID, INTEGER, NOT NULL, id of category of this recipe with Foriegn key relation to Category table.
+- categoryId, INTEGER, NOT NULL, id of category of this recipe with Foriegn key relation to Category table.
 """
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -67,7 +67,7 @@ class Recipe(db.Model):
     ethnicityId = db.Column(db.Integer, db.ForeignKey("ethnicity.id"), nullable=False)
     categoryId = db.Column(db.Integer, db.ForeignKey("category.id"), nullable=False)
 
-    collections = db.relationship("Collection", back_populates="recipes")
+    collections = db.relationship("Collection", secondary=RecipeCollection, back_populates="recipes")
     ethnicity = db.relationship("Ethnicity", back_populates="recipes")
     category = db.relationship("Category", back_populates="recipes")
 
@@ -78,14 +78,14 @@ This table contains data about each collection.
 Columns:
 - id, INTEGER, PRIMARY KEY, contains id of each collection.
 - name, STRING, Max Length 40, NOT NULL, contains title or name of the collection.
-- userID, INTEGER, NOT NULL, id of user that create this collection.
+- userId, INTEGER, NOT NULL, id of user that create this collection.
 """
 class Collection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), nullable=False)
     userId = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
-    recipes = db.relationship("Recipe", back_populates="collections")
+    recipes = db.relationship("Recipe", secondary=RecipeCollection, back_populates="collections")
     user = db.relationship("User", back_populates="collections")
 
 """

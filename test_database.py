@@ -40,7 +40,7 @@ def db_handle():
 def _get_user():
     return User(
         name="John Doe",
-        username="johndoe"
+        userName="johndoe"
     )
 
 def _get_recipe(choice=1):
@@ -65,21 +65,21 @@ def _get_collection(number=1):
 def _get_category(choice=1):
     if choice == 1:
         return Category(
-            "name"="Pasta"
+            name="Pasta"
         )
     else:
         return Category(
-            "name"="Curry"
+            name="Curry"
         )
 
 def _get_ethnicity(choice=1):
     if choice == 1:
         return Ethnicity(
-            "name"="Italian"
+            name="Italian"
         )
     else:
         return Ethnicity(
-            "name"="Indian"
+            name="Indian"
         )
 
 def test_create_instances(db_handle):

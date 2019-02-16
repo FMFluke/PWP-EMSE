@@ -83,7 +83,7 @@ Columns:
 class Collection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), nullable=False)
-    userId = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    userId = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="SET NULL"), nullable=False)
 
     recipes = db.relationship("Recipe", secondary=RecipeCollection, back_populates="collections")
     user = db.relationship("User", back_populates="collections")

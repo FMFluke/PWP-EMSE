@@ -107,7 +107,7 @@ def test_create_user(db_handle):
 ```
 This test will fail if either there is an error in committing the transaction, or if for some reasons there isn't exactly 1 user in the database (remember that each test case is run on a fresh empty database).
 In similiar way you can create further test cases.
-Testing setup guideline text has been taken from excercise #1.
+#Testing setup guideline text has been taken from excercise #1.
 
 
 

@@ -46,7 +46,7 @@ An example code of adding new test case into test_database.py would be:
 ```python
 def test_create_user(db_handle):
     """
-    Tests that user is present is user model.
+    Tests that user is added properly in user model.
     """
     user = _get_user()
     db_handle.session.add(user)

@@ -78,12 +78,12 @@ This table contains data about each collection.
 Columns:
 - id, INTEGER, PRIMARY KEY, contains id of each collection.
 - name, STRING, Max Length 40, NOT NULL, contains title or name of the collection.
-- userId, INTEGER, NOT NULL, id of user that create this collection.
+- userId, INTEGER, NOT NULL, id of user that create this collection, it will be set to Null when user deactivate his/her account.
 """
 class Collection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), nullable=False)
-    userId = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="SET NULL"), nullable=False)
+    userId = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
 
     recipes = db.relationship("Recipe", secondary=RecipeCollection, back_populates="collections")
     user = db.relationship("User", back_populates="collections")

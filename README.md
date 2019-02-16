@@ -38,6 +38,4 @@ except IntegrityError:
 You can see comments inside `populate_db.py` for the documentation of using its functions to populate database.
 ## Testing Database
 After setting up database now we are ready to test database, put `test_database.py` under same directory of as `database.py`.
-Test cases can be executed by using fallowing command (assuming that you are at test_datbase directory)
-     `pytest` 
-`pytest`  will automatically detect python modules that either begin with `_test` or `test_` .
+Test cases can be executed by using `pytest` command (assuming that you are at test_datbase directory), `pytest`  will automatically detect python modules that either begin with `_test` or `test_`  under that directory.

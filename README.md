@@ -60,7 +60,7 @@ def db_handle():
     os.close(db_fd)
     os.unlink(db_fname)
 ```
-##Implementation detail: 
+## Implementation detail: 
 Using yield in a fixture enables the same function to handle both setup (before yield) and teardown (after yield). After creating this fixture, your tests can obtain a fresh database by including db_handle in their parameters.
 Another thing is to enable foreign key support (like we did in the app itself), and to import all models from the app. Adding these lines after import app does the trick:
 ```python
@@ -76,7 +76,39 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 ```
 After this setup we can do any number of functions whose name starts with test_ and that have `db_handle` as their sole parameter, e.g. `test_create_instances`.
-##Writing Test Functions for Models
+## Writing Test Functions for Models
+```python
+A test function represents a test case. It typically consists of preparations and one or more assert statements that are used to determine whether the test subject performed correctly. Assert is a Python statement that functions like an if statement, but instead executing a code block if its condition is (equivalent to) True, assert raises AssertionError if the condition is (equivalent to) False. The pytest framework has its own traceback analysis for AssertionError (see pytest documentation on assert for examples, https://docs.pytest.org/en/latest/assert.html). You can also write a custom message that will replace the traceback.
+When testing models a typical pattern is to create one or more model instances, (try to) save them to the database, and then do assertions about the values stored in the database. 
+A simple example related to our foodpoint api would be to create a user with some values, and check that it was stored.
+We will use create helper functions to avoid extra code.
+```python
+def _get_user(choice=1):
+    if choice == 1:
+        return User(
+           name="kirn",
+           userName="itzkirn"
+        )
+    else:
+        return User(
+           name="John Doe",
+           userName="johndoe"
+        )
+```
+Now we will create test case to test our api.
+```python
+def test_create_user(db_handle):
+    """
+    Tests that user is present is user model.
+    """
+    user = _get_user()
+    db_handle.session.add(user)
+    db_handle.session.commit()
+    assert User.query.count() == 1
+```
+This test will fail if either there is an error in committing the transaction, or if for some reasons there isn't exactly 1 user in the database (remember that each test case is run on a fresh empty database).
+In similiar way you can create further test cases.
+## Testing setup guideline text has been taken from excercise #1.
 
 
 

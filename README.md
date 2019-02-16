@@ -38,7 +38,7 @@ except IntegrityError:
 You can see comments inside `populate_db.py` for the documentation of using its functions to populate database.
 # Datbase Testing (DL2)
 ## Test Setup
-After setting up database now we are ready to test our database,  All Python modules that either begin with _test or test_ are  automatically detected by pytest. Once you have some tests, you can just type pytest into the terminal when in the project directory to run all test.
+After setting up database now we are ready to test our database,  All Python modules that either begin with `_test` or `test_` are  automatically detected by pytest. Once you have some tests, you can just type pytest into the terminal when in the project directory to run all test.
 ```python
 import os
 import pytest

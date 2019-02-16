@@ -40,7 +40,7 @@ You can see comments inside `populate_db.py` for the documentation of using its 
 ## Testing Database
 After setting up database now we are ready to test database, put `test_database.py` under same directory of as `database.py`.
 Test cases can be executed by typing `pytest` command (assuming that you are at test_datbase directory), `pytest`  will automatically detect python modules that either begin with `_test` or `test_` .
-After executing that command you can check all details in command window about test cases i.e passed or failed.
+After executing that command you can check all details in command window about test cases i.e passed or failed .
 An example code of adding new test case into test_database.py would be:
 ```python
 def test_create_user(db_handle):

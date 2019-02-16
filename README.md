@@ -23,7 +23,7 @@ Database will be stored in file name `test.db` at the same directory. The create
 Alternatively, you can run command `python populate_db.py <db_file_name>`, replacing `<db_file_name>` with a string you want as name of database file to create a populated database with that filename. If `<db_file_name>` is left out then the default will be `example.db`.
 
 If you have created an empty database manually, you may want to populate it manually as well. In that case, you will need do import `populate_db.py` and utilise its functions there. You will first need to call function `config_database` first to point to the correct database file name.    
-An example code of adding a user into empty `test.py` would be:    
+An example code of adding a user into empty `test.db` would be:    
 ```python
 import populate_db as handle
 from database import User

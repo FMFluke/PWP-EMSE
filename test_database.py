@@ -37,6 +37,7 @@ def db_handle():
     os.close(db_fd)
     os.unlink(db_fname)
 
+
 def _get_user(choice=1):
     if choice == 1:
         return User(
@@ -48,6 +49,7 @@ def _get_user(choice=1):
            name="John Doe",
            userName="johndoe"
         )
+
 
 def _get_recipe(choice=1):
     if choice == 1:
@@ -63,10 +65,12 @@ def _get_recipe(choice=1):
             ingredients="chicken, tomato, something else"
         )
 
+
 def _get_collection(number=1):
     return Collection(
         name="collection-{}".format(number)
     )
+
 
 def _get_category(choice=1):
     if choice == 1:
@@ -77,6 +81,7 @@ def _get_category(choice=1):
         return Category(
             name="Curry"
         )
+
 
 def _get_ethnicity(choice=1):
     if choice == 1:

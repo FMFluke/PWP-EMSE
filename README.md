@@ -36,7 +36,7 @@ except IntegrityError:
 ```
 
 You can see comments inside `populate_db.py` for the documentation of using its functions to populate database.
-# Datbase Testing (DL2)
+# Database Testing (DL2)
 ## Test Setup
 After setting up database now we are ready to test our database,  All Python modules that either begin with `_test` or `test_` are  automatically detected by pytest. Once you have some tests, you can just type pytest into the terminal when in the project directory to run all test.
 ```python
@@ -60,7 +60,8 @@ def db_handle():
     os.close(db_fd)
     os.unlink(db_fname)
 ```
-##Implementation detail: Using yield in a fixture enables the same function to handle both setup (before yield) and teardown (after yield). After creating this fixture, your tests can obtain a fresh database by including db_handle in their parameters.
+##Implementation detail: 
+Using yield in a fixture enables the same function to handle both setup (before yield) and teardown (after yield). After creating this fixture, your tests can obtain a fresh database by including db_handle in their parameters.
 Another thing is to enable foreign key support (like we did in the app itself), and to import all models from the app. Adding these lines after import app does the trick:
 ```python
 import database

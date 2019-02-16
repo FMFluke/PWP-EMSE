@@ -1,3 +1,4 @@
+import sys
 import database
 from database import User, Recipe, Collection, Category, Ethnicity
 from sqlalchemy.engine import Engine
@@ -22,6 +23,8 @@ def create_database(filename=None):
     with database.app.app_context():
         database.db.create_all()
 
+def config_database(filename):
+    database.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///{}.db".format(filename)
 
 def add_user(name, username):
     """
@@ -130,14 +133,16 @@ def add_recipe_to_collection(recipeId, collectionId):
     collection.recipes.append(recipe)
     database.db.session.commit()
 
-def populate_database_example():
+def populate_database_example(filename):
     """
     This function generates an example of populated database stored in example.db file at the same directory with this code
     Note that here I did not catch exceptions because it is guaranteed to pass in this example, when
     adding custom instances it is best to catch exceptions, see possible exceptions from each function's definition
     """
     #setup database
-    create_database("example")
+    if filename == None:
+        filename = "example" #if filename not provided, use example
+    create_database(filename)
     #add user
     add_user("Gordon Ramsey", "gdramsey")
     add_ethnicity("European")
@@ -155,4 +160,7 @@ def populate_database_example():
     add_recipe_to_collection(salmon_id, mycollection_id)
 
 if __name__ == '__main__':
-    populate_database_example()
+    if len(sys.argv) > 1:
+        populate_database_example(sys.argv[1])
+    else:
+        populate_database_example(None)

@@ -22,7 +22,8 @@ Database will be stored in file name `test.db` at the same directory. The create
 
 Alternatively, you can run command `python populate_db.py <db_file_name>`, replacing `<db_file_name>` with a string you want as name of database file to create a populated database with that filename. If `<db_file_name>` is left out then the default will be `test.db`.
 
-If you have created an empty database manually, you may want to populate it manually as well. In that case, you will need do import `populate_db.py` and utilise its functions there. You will first need to call function `config_database` first to point to the correct database file name.    
+If you have created an empty database manually, you may want to populate it manually as well. In that case, you will need do import `populate_db.py` and utilise its functions there. You will first need to call function `config_database` first to point to the correct database file name .
+
 An example code of adding a user into empty `test.db` would be:    
 ```python
 import populate_db as handle
@@ -36,14 +37,12 @@ except IntegrityError:
 ```
 
 You can see comments inside `populate_db.py` for the documentation of using its functions to populate database.
-# Database Testing (DL2)
-## Test Setup
-After setting up database now we are ready to test our database,  All Python modules that either begin with `_test` or `test_` are  automatically detected by pytest. Once you have some tests, you can just type pytest into the terminal when in the project directory to run all test.
-```python
-import os
-import pytest
-import tempfile
+## Testing Database
+After setting up database now we are ready to test database, put `test_database.py` under same directory of as `database.py`.
+Test cases can be executed by typing `pytest` command (assuming that you are at test_database directory), `pytest`  will automatically detect python modules that either begin with `_test` or `test_` .
+After executing that command you can check all details in command window about test cases i.e. passed or failed .
 
+<<<<<<< HEAD
 import app
 
 @pytest.fixture
@@ -95,16 +94,22 @@ def _get_user(choice=1):
         )
 ```
 Now we will create test case to test our api.
+=======
+An example code of adding new test case into test_database.py would be:
+>>>>>>> c5c2611c8e1ec94ed73b36687d8397dd40df5eea
 ```python
 def test_create_user(db_handle):
     """
-    Tests that user is present is user model.
+    Tests that user is added properly in user model.
     """
     user = _get_user()
     db_handle.session.add(user)
     db_handle.session.commit()
     assert User.query.count() == 1
 ```
+<<<<<<< HEAD
 This test will fail if either there is an error in committing the transaction, or if for some reasons there isn't exactly 1 user in the database (remember that each test case is run on a fresh empty database).
 In similiar way you can create further test cases.
 #Testing setup guideline text has been taken from excercise #1.
+=======
+>>>>>>> c5c2611c8e1ec94ed73b36687d8397dd40df5eea

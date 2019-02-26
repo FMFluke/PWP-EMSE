@@ -257,16 +257,15 @@ def test_deleting_user(db_handle):
 
 def test_user_collection_relationship(db_handle):
     """
-    Tests breaking of foreign key relationship, that one collection belong to only single user,
-    i.e foreign key relationship.
+    Tests breaking of foreign key relationship, that one collection must belong to an existing user.
     """
-    user_1 = _get_user(1)
-    user_2 = _get_user()
+    user = _get_user(1)
     collection = _get_collection()
-    collection.user = user_1
+    collection.user = user
     db_handle.session.add(collection)
-    collection.user = user_2
-    db_handle.session.add(collection)
+    db_handle.session.commit()
+    collection = Collection.query.first()
+    collection.userId = collection.userId + 202 #does not exist
     with pytest.raises(IntegrityError):
         db_handle.session.commit()
     db_handle.session.rollback()
@@ -275,25 +274,29 @@ def test_user_collection_relationship(db_handle):
 def test_recipe_category_and_ethnicity_relationship(db_handle):
     """
     Tests breaking of foreign key relationship, checks that we can not assign
-     same category and ethnicity twice to same recipe,also test rating value can be null i.e won't
-     give any exception.
+     non existing category and ethnicity to a recipe.
     """
     category_1 = _get_category(1)
-    category_2 = _get_category()
     ethnicity_1 = _get_ethnicity(1)
-    ethnicity_2 = _get_ethnicity()
     recipe = _get_recipe()
     recipe.category = category_1
     recipe.ethnicity = ethnicity_1
     db_handle.session.add(recipe)
-    recipe.category = category_2
-    recipe.ethnicity = ethnicity_2
-    db_handle.session.add(recipe)
     db_handle.session.commit()
     assert Recipe.query.count() == 1
-    #with pytest.raises(IntegrityError):
-        #db_handle.session.commit()
+
+    recipe = Recipe.query.first()
+    recipe.ethnicityId = recipe.ethnicityId + 131 #does not exist
+    with pytest.raises(IntegrityError):
+        db_handle.session.commit()
     db_handle.session.rollback()
+
+    recipe = Recipe.query.first()
+    recipe.categoryId = recipe.categoryId + 131 #does not exist
+    with pytest.raises(IntegrityError):
+        db_handle.session.commit()
+    db_handle.session.rollback()
+
 
 
 def test_recipe_collection_relationship(db_handle):
@@ -310,7 +313,6 @@ def test_recipe_collection_relationship(db_handle):
     recipe_1.ethnicity = ethnicity
     collection.user = user
     collection.recipes.append(recipe_1)
-    db_handle.session.add(collection)
     collection.recipes.append(recipe_1)
     db_handle.session.add(collection)
     with pytest.raises(IntegrityError):
@@ -333,3 +335,20 @@ def test_collection_ondelete_user(db_handle):
     db_handle.session.delete(user)
     db_handle.session.commit()
     assert Collection.query.count() == 0
+
+
+def test_constraint_collection_name(db_handle):
+    """
+    Test that a user can't have two collections with the same name.
+    """
+    collection_1 = _get_collection()
+    collection_2 = _get_collection()
+    user = _get_user()
+    collection_1.user = user
+    collection_2.user = user
+    db_handle.session.add(user)
+    db_handle.session.add(collection_1)
+    db_handle.session.add(collection_2)
+    with pytest.raises(IntegrityError):
+        db_handle.session.commit()
+    db_handle.session.rollback()

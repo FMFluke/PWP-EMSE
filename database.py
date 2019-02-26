@@ -81,6 +81,8 @@ Columns:
 - userId, INTEGER, NOT NULL, id of user that create this collection.
 """
 class Collection(db.Model):
+    __table_args__ = (db.UniqueConstraint("name", "userId", name="_user_title_uc"), )
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), nullable=False)
     description = db.Column(db.String(100))

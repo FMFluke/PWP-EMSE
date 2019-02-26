@@ -25,7 +25,7 @@ Columns:
 - recipeId, INTEGER, PRIMARY KEY, contains id of recipe with Foriegn key relation to Recipe table
 """
 RecipeCollection = db.Table("RecipeCollection",
-    db.Column("collectionId", db.Integer, db.ForeignKey("collection.id"), primary_key=True),
+    db.Column("collectionId", db.Integer, db.ForeignKey("collection.id", ondelete="CASCADE"), primary_key=True),
     db.Column("recipeId", db.Integer, db.ForeignKey("recipe.id"), primary_key=True)
 )
 
@@ -43,7 +43,7 @@ class User(db.Model):
     name = db.Column(db.String(30), nullable=False)
     userName = db.Column(db.String(20), nullable=False, unique=True)
 
-    collections = db.relationship("Collection", back_populates="user")
+    collections = db.relationship("Collection", cascade="all,delete", back_populates="user")
 
 """
 Table Recipe
@@ -78,12 +78,13 @@ This table contains data about each collection.
 Columns:
 - id, INTEGER, PRIMARY KEY, contains id of each collection.
 - name, STRING, Max Length 40, NOT NULL, contains title or name of the collection.
-- userId, INTEGER, NOT NULL, id of user that create this collection, it will be set to Null when user deactivate his/her account.
+- userId, INTEGER, NOT NULL, id of user that create this collection.
 """
 class Collection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), nullable=False)
-    userId = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
+    description = db.Column(db.String(100))
+    userId = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
 
     recipes = db.relationship("Recipe", secondary=RecipeCollection, back_populates="collections")
     user = db.relationship("User", back_populates="collections")
@@ -99,6 +100,7 @@ Columns:
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), nullable=False)
+    description = db.Column(db.String(100))
 
     recipes = db.relationship("Recipe", back_populates="category")
 
@@ -113,5 +115,6 @@ Columns:
 class Ethnicity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), nullable=False)
+    description = db.Column(db.String(100))
 
     recipes = db.relationship("Recipe", back_populates="ethnicity")

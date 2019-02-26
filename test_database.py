@@ -320,17 +320,16 @@ def test_recipe_collection_relationship(db_handle):
 
 def test_collection_ondelete_user(db_handle):
     """
-    Tests that collection user foreign key is set to null when the user
+    Tests that collection owned by the user is deleted when the user
     is deleted.
     """
 
     user = _get_user()
     collection = _get_collection()
     collection.user = user
-    db_handle.session.add(collection)
     db_handle.session.add(user)
+    db_handle.session.add(collection)
     db_handle.session.commit()
     db_handle.session.delete(user)
     db_handle.session.commit()
-    assert collection.user is None
-    db_handle.session.rollback()
+    assert Collection.query.count() == 0

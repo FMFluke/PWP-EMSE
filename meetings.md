@@ -19,16 +19,18 @@ We forget to include the link for the BigOven API into the wiki and we added the
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*
 
 ## Meeting 2.
-* **DATE:**
-* **ASSISTANTS:**
+* **DATE:** 26/02/2019,12.00 PM
+* **ASSISTANTS:** Marta Cortés Orduña
 * **GRADE:** *To be filled by course staff*
 
 ### Minutes
 *Summary of what was discussed during the meeting*
 
+Had a good discussion about the development in the project and discussed about the testing process of the project. Assistant had gone through the test cases and suggested possible additions to the test cases. Marta's suggestions prompted as into include someadditional test cases for checking the possible error conditions. The discussion helped us to think differently from the conventional ways and improving the application acceptance.
+
 ### Action points
 *List here the actions points discussed with assistants*
-
+There was a confusion regarding the deletion of reciepes from the database and how it will reflect in the collection table. It has been rectified and come to an agreement regarding how to implement the deletion of reciepes.
 
 ### Comments from staff
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*

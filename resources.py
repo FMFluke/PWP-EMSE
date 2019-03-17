@@ -2,7 +2,6 @@ from flask_restful import Resource
 from flask import Response, request
 from jsonschema import validate, ValidationError
 from sqlalchemy.exc import IntegrityError
-"""-----Foodpoint.api does not exist yet!!-----"""
 from Foodpoint.database import User
 from Foodpoint.utils import MasonBuilder, create_error_response
 from Foodpoint.utils import MASON, ERROR_PROFILE, USER_PROFILE, LINK_RELATIONS_URL
@@ -88,6 +87,9 @@ class FoodpointBuilder(MasonBuilder):
             method="DELETE"
         )
 
+"""
+Resouce classes for this api
+"""
 class AllUsers(Resource):
 
     def get(self):

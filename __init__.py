@@ -28,8 +28,8 @@ def create_app(test_config=None):
     """----This part will be edited later to code belong in this project---
     from . import models
     app.cli.add_command(models.init_db_command)
+    """
     from . import api
     app.register_blueprint(api.api_bp)
-    """
 
     return app

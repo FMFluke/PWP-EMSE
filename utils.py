@@ -5,6 +5,9 @@ import json
 MASON = "application/vnd.mason+json"
 ERROR_PROFILE = "/profiles/error/"
 USER_PROFILE = "/profiles/user/"
+Category_PROFILE = "/profiles/category/"
+Ethnicity_PROFILE = "/profiles/ethnicity/"
+Collection_PROFILE = "/profiles/collection/"
 LINK_RELATIONS_URL = "/foodpoint/link-relations#"
 
 """----MasonBuilder----"""

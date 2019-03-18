@@ -1,5 +1,5 @@
 from Foodpoint import db
-from database import User, Recipe, Collection, Category, Ethnicity
+from Foodpoint.database import User, Recipe, Collection, Category, Ethnicity
 import click
 from flask.cli import with_appcontext
 from sqlalchemy.engine import Engine

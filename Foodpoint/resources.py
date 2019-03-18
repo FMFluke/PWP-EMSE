@@ -197,7 +197,7 @@ class AllUsers(Resource):
     def get(self):
         users = User.query.all()
         all_users = []
-        for user in all_users:
+        for user in users:
             temp = FoodpointBuilder(
                 name=user.name,
                 userName=user.userName
@@ -231,7 +231,9 @@ class AllUsers(Resource):
         try:
             db.session.add(user)
             db.session.commit()
-            return Response(status=201)
+            headers = {}
+            headers["location"] = api.url_for(EachUser, user=userName)
+            return Response("Success", 201, headers)
         except IntegrityError:
             db.session.rollback()
             return create_error_response(409, "Already exists", "User with userName {} already exists.".format(request.json["userName"]))

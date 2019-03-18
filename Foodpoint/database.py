@@ -88,7 +88,7 @@ Columns:
 """
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(40), nullable=False)
+    name = db.Column(db.String(40), nullable=False, unique=True)
     description = db.Column(db.String(100))
 
     recipes = db.relationship("Recipe", back_populates="category")
@@ -104,7 +104,7 @@ Columns:
 """
 class Ethnicity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(40), nullable=False)
+    name = db.Column(db.String(40), nullable=False, unique=True)
     description = db.Column(db.String(100))
 
     recipes = db.relationship("Recipe", back_populates="ethnicity")

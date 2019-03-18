@@ -26,7 +26,7 @@ class FoodpointBuilder(MasonBuilder):
             "description": "Name of user",
             "type": "string"
         }
-        props["userName"] =  {
+        props["userName"] = {
             "description": "User unique identifer string",
             "type": "string"
         }
@@ -118,7 +118,7 @@ class FoodpointBuilder(MasonBuilder):
         self.add_control(
             "fpoint:all-ethnicities",
             href=api.url_for(AllEthnicities),
-            title="All ethnicities"
+            title="All Ethnicities"
         )
 
     def add_control_edit_user(self, user):
@@ -303,7 +303,7 @@ class CollectionsByUser(Resource):
                 name=collection.name,
                 description=collection.description
             )
-            temp.add_control("self", api.url_for(EachUser, user=user))
+            temp.add_control("self", api.url_for(EachCollection, user=user, col_name=collection.name))
             temp.add_control("profile", Collection_PROFILE)
             user_collection.append(temp)
         #create the response body, with the previous list as a field called 'items'
@@ -330,10 +330,12 @@ class CollectionsByUser(Resource):
         name = request.json["name"]
         description = request.json["description"]
         collection = Collection(name=name, description=description, user=finduser)
+        headers = {}
+        headers["location"] = api.url_for(EachCollection, user=user, col_name=request.json["name"])
         try:
             db.session.add(collection)
             db.session.commit()
-            return Response(status=204)
+            return Response("Success", 201, headers)
         except IntegrityError:
             db.session.rollback()
             return create_error_response(409, "Already exists", "Collection against user {} already exists.".format(user))
@@ -387,7 +389,9 @@ class AllCategories(Resource):
         try:
             db.session.add(category)
             db.session.commit()
-            return Response(status=201)
+            headers = {}
+            headers["location"] = api.url_for(EachCategory, name=name)
+            return Response("Success", 201, headers)
         except IntegrityError:
             db.session.rollback()
             return create_error_response(409, "Already exists", "Category with name {} already exists.".format(request.json["name"]))
@@ -470,7 +474,9 @@ class AllEthnicities(Resource):
         try:
             db.session.add(ethnicity)
             db.session.commit()
-            return Response(status=201)
+            headers = {}
+            headers["location"] = api.url_for(EachCategory, name=name)
+            return Response("Success", 201, headers)
         except IntegrityError:
             db.session.rollback()
             return create_error_response(409, "Already exists", "Ethnicity with name {} already exists.".format(request.json["name"]))

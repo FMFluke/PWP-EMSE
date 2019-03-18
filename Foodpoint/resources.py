@@ -124,7 +124,7 @@ class AllUsers(Resource):
             return create_error_response(400, "Invalid JSON document", str(e))
 
         name = request.json["name"]
-        userName = request.json["userName"])
+        userName = request.json["userName"]
         user = User(name=name, userName=userName)
         try:
             db.session.add(user)
@@ -166,7 +166,7 @@ class EachUser(Resource):
         target = User.query.filter_by(userName=user).first()
         if (target):
             target.name = request.json["name"]
-            target.userName = request.json["userName"])
+            target.userName = request.json["userName"]
             try:
                 db.session.commit()
                 return Response(status=204)

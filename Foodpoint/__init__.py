@@ -1,6 +1,8 @@
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.engine import Engine
+from sqlalchemy import event
 
 db = SQLAlchemy()
 
@@ -10,7 +12,8 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY="dev",
-        SQLALCHEMY_DATABASE_URI="sqlite:///" + os.path.join(app.instance_path, "development.db"),
+        #SQLALCHEMY_DATABASE_URI="sqlite:///" + os.path.join(app.instance_path, "development.db"),
+        SQLALCHEMY_DATABASE_URI = "sqlite:///test.db",
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
 
@@ -25,10 +28,20 @@ def create_app(test_config=None):
         pass
 
     db.init_app(app)
-    """----This part will be edited later to code belong in this project---
-    from . import models
-    app.cli.add_command(models.init_db_command)
-    """
+
+    #This function is brought from example in the exercise
+    @event.listens_for(Engine, "connect")
+    def set_sqlite_pragma(dbapi_connection, connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
+
+    from . import database
+    app.cli.add_command(database.init_db_command)
+
+    from . import populate_db
+    app.cli.add_command(populate_db.populate_database_example)
+
     from . import api
     app.register_blueprint(api.api_bp)
 

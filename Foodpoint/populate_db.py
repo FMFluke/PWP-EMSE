@@ -1,6 +1,7 @@
-import sys
-import database
+from Foodpoint import db
 from database import User, Recipe, Collection, Category, Ethnicity
+import click
+from flask.cli import with_appcontext
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError, StatementError
 from sqlalchemy import event
@@ -11,20 +12,6 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
-
-def create_database(filename=None):
-    """
-    Setup a new database, filename will be defaulted to test.db unless provided.
-    Parameters:
-    - filename: String, name of .db file
-    """
-    if (filename):
-        database.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///{}.db".format(filename)
-    with database.app.app_context():
-        database.db.create_all()
-
-def config_database(filename):
-    database.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///{}.db".format(filename)
 
 def add_user(name, username):
     """
@@ -38,11 +25,11 @@ def add_user(name, username):
         name=name,
         userName=username
     )
-    database.db.session.add(user)
+    db.session.add(user)
     try:
-        database.db.session.commit()
+        db.session.commit()
     except IntegrityError:
-        database.db.session.rollback() #recover database to be ready for new modification
+        db.session.rollback() #recover database to be ready for new modification
         raise
 
 def add_ethnicity(name):
@@ -52,8 +39,8 @@ def add_ethnicity(name):
     - name: String, name of ethnicity
     """
     ethnicity = Ethnicity(name=name)
-    database.db.session.add(ethnicity)
-    database.db.session.commit()
+    db.session.add(ethnicity)
+    db.session.commit()
 
 def add_category(name):
     """
@@ -62,8 +49,8 @@ def add_category(name):
     - name: String, name of category
     """
     category = Category(name=name)
-    database.db.session.add(category)
-    database.db.session.commit()
+    db.session.add(category)
+    db.session.commit()
 
 def add_recipe(title, description, ingredients, ethnicity, category):
     """
@@ -88,11 +75,11 @@ def add_recipe(title, description, ingredients, ethnicity, category):
         ethnicity = query_ethnicity,
         category=query_category
     )
-    database.db.session.add(recipe)
+    #db.session.add(recipe)
     try:
-        database.db.session.commit()
+        db.session.commit()
     except IntegrityError:
-        database.db.session.rollback() #recover database to be ready for new modification
+        db.session.rollback() #recover database to be ready for new modification
         raise
 
 def add_collection(name, user):
@@ -111,11 +98,11 @@ def add_collection(name, user):
         name=name,
         user=owner
     )
-    database.db.session.add(collection)
+    #db.session.add(collection)
     try:
-        database.db.session.commit()
+        db.session.commit()
     except IntegrityError:
-        database.db.session.rollback() #recover database to be ready for new modification
+        db.session.rollback() #recover database to be ready for new modification
         raise
 
 def add_recipe_to_collection(recipeId, collectionId):
@@ -131,22 +118,22 @@ def add_recipe_to_collection(recipeId, collectionId):
     if collection == None or recipe == None:
         raise ValueError("Collection or Recipe does not exist")
     collection.recipes.append(recipe)
-    database.db.session.commit()
+    db.session.commit()
 
-def populate_database_example(filename):
+@click.command("populate-db")
+@with_appcontext
+def populate_database_example():
     """
-    This function generates an example of populated database stored in example.db file at the same directory with this code
-    Note that here I did not catch exceptions because it is guaranteed to pass in this example, when
-    adding custom instances it is best to catch exceptions, see possible exceptions from each function's definition
+    This function populate database with some example initial values, the database will be the one configured in the app
+    and need to be created beforehand with command init-db. Note that here I did not catch exceptions because it
+    is guaranteed to pass in this example, when adding custom instances it is best to catch exceptions,
+    see possible exceptions from each function's definition
     """
-    #setup database
-    if filename == None:
-        filename = "example" #if filename not provided, use example
-    create_database(filename)
     #add user
     add_user("Gordon Ramsey", "gdramsey")
     add_ethnicity("European")
     add_category("Seafood")
+    add_collection("My Collection", "gdramsey")
 
     add_recipe(
         title="Salmon Steak",
@@ -154,13 +141,6 @@ def populate_database_example(filename):
         ingredients="Salmon fillet, yogurt, cream, dill",
         ethnicity="European",
         category="Seafood")
-    add_collection("My Collection", "gdramsey")
     salmon_id = Recipe.query.filter_by(title="Salmon Steak").first().id
     mycollection_id = Collection.query.filter_by(name="My Collection").first().id
     add_recipe_to_collection(salmon_id, mycollection_id)
-
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        populate_database_example(sys.argv[1])
-    else:
-        populate_database_example(None)

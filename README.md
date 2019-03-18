@@ -13,23 +13,18 @@ All dependencies can be installed using `pip install` command followed by the na
 `pip install -r requirements.txt`    
 
 ## Creating and populating the database
-The database can be created by running the following two lines of code from python console. (Assuming current directory is same with `database.py`)    
-```python
-from database import db    
-db.create_all()    
-```    
-Database will be stored in file name `test.db` at the same directory. The created database will be empty.    
+The database can be created by running the command `flask init-db` from the directory above the Foodpoint folder. Note that you need to export the `FLASK_APP` environment to Foodpoint folder before using this command. For example use `export FLASK_APP=Foodpoint`    
+Database will be created according to the configuration of the app which could be passed to function `create_app` in `__init__.py` inside Foodpoint folder by having a file `config.py`. Otherwise it will default to `development.db` hardcoded in the function. The created database will be empty.    
 
-Alternatively, you can run command `python populate_db.py <db_file_name>`, replacing `<db_file_name>` with a string you want as name of database file to create a populated database with that filename. If `<db_file_name>` is left out then the default will be `test.db`.
+To populate database with initial example values, run the command `flask populate_db`
 
-If you have created an empty database manually, you may want to populate it manually as well. In that case, you will need do import `populate_db.py` and utilise its functions there. You will first need to call function `config_database` first to point to the correct database file name .
+If you want to populate it manually, you will need to import `populate_db.py` and utilise its functions there. These functions will point to the database file as configured in `creat_app` function automatically.
 
 An example code of adding a user into empty `test.db` would be:    
 ```python
 import populate_db as handle
 from database import User
 
-handle.config_database("test") #point to the right file
 try:
     handle.add_user("Frodo Baggins", "fbaggins")
 except IntegrityError:

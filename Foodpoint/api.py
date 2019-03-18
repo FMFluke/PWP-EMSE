@@ -5,7 +5,7 @@ api = Api(api_bp)
 
 # this import must be placed after we create api to avoid issues with
 # circular imports
-from Foodpoint.resources import AllUsers, EachUser
+from Foodpoint.resources import AllUsers, EachUser, CollectionsByUser, EachCollection, EachRecipe, AllCategories, EachCategory, AllEthnicities, EachEthnicity
 
 #add route to each resources
 api.add_resource(AllUsers, "/users/")

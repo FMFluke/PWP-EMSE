@@ -1,20 +1,6 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.engine import Engine
-from sqlalchemy import event
-
-app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db = SQLAlchemy(app)
-
-#This function is brought from example in the exercise
-@event.listens_for(Engine, "connect")
-def set_sqlite_pragma(dbapi_connection, connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
+import click
+from Foodpoint import db
+from flask.cli import with_appcontext
 
 """
 Table RecipeCollection
@@ -98,6 +84,7 @@ This table contains categories available in the system.
 Columns:
 - id, INTEGER, PRIMARY KEY, contains id of each category.
 - name, STRING, Max Length 40, NOT NULL, contains title or name of the category.
+- description, STRING, Max Length 100, contains description of category
 """
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -113,6 +100,7 @@ This table contains categories available in the system.
 Columns:
 - id, INTEGER, PRIMARY KEY, contains id of each ethnicity.
 - name, STRING, Max Length 40, NOT NULL, contains title or name of the ethnicity.
+- description, STRING, Max Length 100, contains description of ethnicity
 """
 class Ethnicity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -120,3 +108,9 @@ class Ethnicity(db.Model):
     description = db.Column(db.String(100))
 
     recipes = db.relationship("Recipe", back_populates="ethnicity")
+
+
+@click.command("init-db")
+@with_appcontext
+def init_db_command():
+    db.create_all()

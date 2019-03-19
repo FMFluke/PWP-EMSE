@@ -8,6 +8,7 @@ USER_PROFILE = "/profiles/user/"
 Category_PROFILE = "/profiles/category/"
 Ethnicity_PROFILE = "/profiles/ethnicity/"
 Collection_PROFILE = "/profiles/collection/"
+Recipe_PROFILE = "/profiles/collection/"
 LINK_RELATIONS_URL = "/foodpoint/link-relations#"
 
 """----MasonBuilder----"""

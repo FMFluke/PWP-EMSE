@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from Foodpoint.database import User,Collection,Recipe,Category,Ethnicity
 from Foodpoint.utils import MasonBuilder, create_error_response
 from Foodpoint.utils import MASON, ERROR_PROFILE, USER_PROFILE, LINK_RELATIONS_URL,Collection_PROFILE
-from Foodpoint.utils import Category_PROFILE,Ethnicity_PROFILE
+from Foodpoint.utils import Category_PROFILE,Ethnicity_PROFILE, Recipe_PROFILE
 from Foodpoint.api import api
 from Foodpoint import db
 import json
@@ -83,6 +83,65 @@ class FoodpointBuilder(MasonBuilder):
         }
         return schema
 
+    @staticmethod
+    def recipe_schema():
+        schema = {
+            "type": "object",
+            "required": ["title", "description", "ingredients", "ethnicity", "category"]
+        }
+        props = schema["properties"] = {}
+        props["title"] = {
+            "description": "title of recipe",
+            "type": "string"
+        }
+        props["description"] = {
+            "description": "recipe description",
+            "type": "string"
+        }
+        props["ingredients"] = {
+            "description": "ingredients of recipe",
+            "type": "string"
+        }
+        props["rating"] = {
+            "description": "rating of recipe",
+            "type": "number"
+        }
+        props["ethnicity"] = {
+            "description": "ethnicity of recipe",
+            "type": "string"
+        }
+        props["category"] = {
+            "description": "category of recipe",
+            "type": "string"
+        }
+        return schema
+
+    @staticmethod
+    def updaterecipe_schema():
+        schema = {
+            "type": "object",
+            "required": ["title", "description", "ingredients"]
+        }
+        props = schema["properties"] = {}
+        props["title"] = {
+            "description": "title of recipe",
+            "type": "string"
+        }
+        props["description"] = {
+            "description": "recipe description",
+            "type": "string"
+        }
+        props["ingredients"] = {
+            "description": "ingredients of recipe",
+            "type": "string"
+        }
+        props["rating"] = {
+            "description": "rating of recipe",
+            "type": "number"
+        }
+
+        return schema
+
     def add_control_all_users(self):
         self.add_control(
             "fpoint:all-users",
@@ -121,6 +180,20 @@ class FoodpointBuilder(MasonBuilder):
             title="All Ethnicities"
         )
 
+    def add_control_category(self,cat_name):
+        self.add_control(
+            "fpoint:category",
+            href=api.url_for(EachCategory, cat_name=cat_name),
+            title="Category of this recipe"
+        )
+
+    def add_control_ethnicity(self,eth_name):
+        self.add_control(
+            "fpoint:ethnicity",
+            href=api.url_for(EachEthnicity, eth_name=eth_name),
+            title="Ethnicity of this recipe"
+        )
+
     def add_control_edit_user(self, user):
         self.add_control(
             "edit",
@@ -143,10 +216,56 @@ class FoodpointBuilder(MasonBuilder):
         self.add_control(
             "fpoint:add-collection",
             href=api.url_for(CollectionsByUser, user=user),
-            title="Add new collection for for user",
+            title="Add new collection for user",
             method="POST",
             encoding="json",
             schema=self.collection_schema()
+        )
+
+    def add_control_edit_collection(self, user, col_name):
+        self.add_control(
+            "edit",
+            href=api.url_for(EachCollection, user=user, col_name=col_name),
+            title="Edit this collection information",
+            method="PUT",
+            encoding="json",
+            schema=self.collection_schema()
+        )
+
+    def add_control_edit_recipe(self, user, col_name, recipe_id):
+        self.add_control(
+            "edit",
+            href=api.url_for(EachRecipe, user=user, col_name=col_name, recipe_id=recipe_id),
+            title="Edit this recipe information",
+            method="PUT",
+            encoding="json",
+            schema=self.updaterecipe_schema()
+        )
+
+    def add_control_delete_collection(self, user, col_name):
+        self.add_control(
+            "fpoint:delete",
+            href=api.url_for(EachCollection, user=user, col_name=col_name),
+            title="Delete this collection",
+            method="DELETE"
+        )
+
+    def add_control_delete_recipe(self, user, col_name, recipe_id):
+        self.add_control(
+            "fpoint:delete",
+            href=api.url_for(EachRecipe, user=user, col_name=col_name, recipe_id=recipe_id),
+            title="Delete this recipe",
+            method="DELETE"
+        )
+
+    def add_control_add_recipe(self, user, col_name):
+        self.add_control(
+            "fpoint:add-recipe",
+            href=api.url_for(EachCollection, user=user),
+            title="Add new recipe to collection of user",
+            method="POST",
+            encoding="json",
+            schema=self.recipe_schema()
         )
 
     def add_control_add_category(self):
@@ -342,15 +461,101 @@ class CollectionsByUser(Resource):
 #api.add_resource(EachCollection, "/users/<user>/collections/<col_name>/")
 class EachCollection(Resource):
     def get(self, user, col_name):
-        pass
+        finduser = User.query.filter_by(userName=user).first()
+        if finduser is None:
+            return create_error_response(404, "User not found")
+        findCol = Collection.query.filter_by(userId=finduser.id, name=col_name).first()
+        if findCol is None:
+            return create_error_response(404, "Collection not found")
+        #query to be tested- get all recipes with collection name of user
+        col_recipes = Recipe.query.filter(Recipe.collections.any(name=col_name)).all()
+        recipe_collection = []
+        for collection in col_recipes:
+            temp = FoodpointBuilder(
+                title=collection.name,
+                description=collection.description
+            )
+            temp.add_control("self", api.url_for(EachRecipe, user=user, col_name=col_name, recipe_id=collection.id))
+            temp.add_control("profile", Recipe_PROFILE)
+            recipe_collection.append(temp)
+        # create the response body, with the previous list as a field called 'items'
+        body = FoodpointBuilder(
+            items=recipe_collection
+        )
+        body.add_namespace("fpoint", LINK_RELATIONS_URL)
+        body.add_control("self", api.url_for(EachCollection, user=user, col_name=col_name))
+        body.add_control_collections_by(user)
+        body.add_control_add_recipe(user, col_name)
+        body.add_control_edit_collection(user, col_name)
+        body.add_control_delete_collection(user, col_name)
+        return Response(json.dumps(body), 200, mimetype=MASON)
+
     def post(self, user, col_name):
-        pass
+        finduser = User.query.filter_by(userName=user).first()
+        if finduser is None:
+            return create_error_response(404, "User not found")
+        findCol = Collection.query.filter_by(userId=finduser.id, name=col_name).first()
+        if findCol is None:
+            return create_error_response(404, "Collection not found")
+        if (request.json == None):
+            return create_error_response(415, "Unsupported media type", "Request content type must be JSON")
+        try:
+            validate(request.json, FoodpointBuilder.recipe_schema())
+        except ValidationError as e:
+            return create_error_response(400, "Invalid JSON document", str(e))
+        findcategory = Category.query.filter_by(name=request.json["category"]).first()
+        findethnicity = Ethnicity.query.filter_by(name=request.json["ethnicity"]).first()
+        if findcategory is None:
+            return create_error_response(404, "category not found")
+        if findethnicity is None:
+            return create_error_response(404, "ethnicity not found")
+
+        title = request.json["title"]
+        description = request.json["description"]
+        ingredients = request.json["ingredients"]
+        rating = request.json["rating"]
+        recipe = Recipe(title=title, description=description,ingredients=ingredients,rating=rating,category=findcategory,ethnicity=findethnicity)
+        headers = {}
+        db.session.add(recipe)
+        db.session.commit()
+        headers["location"] = api.url_for(EachRecipe, user=user, col_name=col_name, recipe_id=recipe.id)
+        return Response("Success", 201, headers)
 
     def put(self, user, col_name):
-        pass
+        if (request.json == None):
+            return create_error_response(415, "Unsupported media type", "Request content type must be JSON")
+        try:
+            validate(request.json, FoodpointBuilder.collection_schema())
+        except ValidationError as e:
+            return create_error_response(400, "Invalid JSON document", str(e))
+        finduser = User.query.filter_by(userName=user).first()
+        if finduser is None:
+            return create_error_response(404, "User not found")
+        findCol = Collection.query.filter_by(userId=finduser.id, name=col_name).first()
+
+        if (findCol):
+            findCol.name = request.json["name"]
+            findCol.description = request.json["description"]
+            try:
+                db.session.commit()
+                return Response(status=204)
+            except IntegrityError:
+                db.session.rollback()
+                return create_error_response(409, "Already exists", "Collection with name {} already exists for this user.".format(request.json["name"]))
+        else:
+            return create_error_response(404, "Collection not found")
 
     def delete(self, user, col_name):
-        pass
+        finduser = User.query.filter_by(userName=user).first()
+        if finduser is None:
+            return create_error_response(404, "User not found")
+        target = Collection.query.filter_by(userId=finduser.id, name=col_name).first()
+        if (target):
+            db.session.delete(target)
+            db.session.commit()
+            return Response(status=204)
+        else:
+            return create_error_response(404, "Collection not found")
 #api.add_resource(AllCategories, "/categories/")
 class AllCategories(Resource):
     def get(self):
@@ -520,13 +725,74 @@ class EachEthnicity(Resource):
                 return create_error_response(409, "Already exists", "Ethnicity with name {} already exists.".format(request.json["name"]))
         else:
             return create_error_response(404, "Ethnicity not found")
-
+#api.add_resource(EachRecipe, "/users/<user>/collections/<col_name>/<recipe_id>/")
 class EachRecipe(Resource):
     def get(self, user, col_name, recipe_id):
-        pass
+        finduser = User.query.filter_by(userName=user).first()
+        if finduser is None:
+            return create_error_response(404, "User not found")
+        findCol = Collection.query.filter_by(userId=finduser.id, name=col_name).first()
+        if findCol is None:
+            return create_error_response(404, "Collection not found")
+        target = Recipe.query.filter_by(id=recipe_id).first()
+        findEthnicity = Ethnicity.query.filter_by(id=target.ethnicityId).first()
+        findCategory = Category.query.filter_by(id=target.categoryId).first()
+        if (target):
+            body = FoodpointBuilder(
+                title=target.title,
+                description=target.description,
+                ingredients=target.ingredients,
+                rating=target.rating,
+                ethnicity=findEthnicity.name,
+                category=findCategory.name
+            )
+            body.add_namespace("fpoint", LINK_RELATIONS_URL)
+            body.add_control("self", api.url_for(EachRecipe, user=user, col_name=col_name, recipe_id=recipe_id))
+            body.add_control("collection", Recipe_PROFILE)
+            body.add_control("profile", api.url_for(EachCollection, user=user,col_name=col_name))
+            body.add_control_ethnicity(target.ethnicity)
+            body.add_control_category(target.category)
+            body.add_control_edit_recipe(user, col_name, recipe_id)
+            body.add_control_delete_recipe(user, col_name, recipe_id)
+            return Response(json.dumps(body), 200, mimetype=MASON)
+        else:
+            return create_error_response(404, "Recipe not found")
 
     def put(self, user, col_name, recipe_id):
-        pass
+        if (request.json == None):
+            return create_error_response(415, "Unsupported media type", "Request content type must be JSON")
+        try:
+            validate(request.json, FoodpointBuilder.updaterecipe_schema())
+        except ValidationError as e:
+            return create_error_response(400, "Invalid JSON document", str(e))
+        finduser = User.query.filter_by(userName=user).first()
+        if finduser is None:
+            return create_error_response(404, "User not found")
+        findCol = Collection.query.filter_by(userId=finduser.id, name=col_name).first()
+        if findCol is None:
+            return create_error_response(404, "Collection not found")
+        target = Recipe.query.filter_by(id=recipe_id).first()
+        if (target):
+            target.title = request.json["title"]
+            target.description = request.json["description"]
+            target.ingredients = request.json["ingredients"]
+            target.rating = request.json["rating"]
+            db.session.commit()
+            return Response(status=204)
+        else:
+            return create_error_response(404, "Recipe not found")
 
     def delete(self, user, col_name, recipe_id):
-        pass
+        finduser = User.query.filter_by(userName=user).first()
+        if finduser is None:
+            return create_error_response(404, "User not found")
+        findCol = Collection.query.filter_by(userId=finduser.id, name=col_name).first()
+        if findCol is None:
+            return create_error_response(404, "Collection not found")
+        target = Recipe.query.filter_by(id=recipe_id).first()
+        if (target):
+            db.session.delete(target)
+            db.session.commit()
+            return Response(status=204)
+        else:
+            return create_error_response(404, "Recipe not found")

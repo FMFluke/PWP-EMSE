@@ -180,14 +180,14 @@ class FoodpointBuilder(MasonBuilder):
             title="All Ethnicities"
         )
 
-    def add_control_category(self,cat_name):
+    def add_control_category(self, cat_name):
         self.add_control(
             "fpoint:category",
             href=api.url_for(EachCategory, cat_name=cat_name),
             title="Category of this recipe"
         )
 
-    def add_control_ethnicity(self,eth_name):
+    def add_control_ethnicity(self, eth_name):
         self.add_control(
             "fpoint:ethnicity",
             href=api.url_for(EachEthnicity, eth_name=eth_name),
@@ -261,7 +261,7 @@ class FoodpointBuilder(MasonBuilder):
     def add_control_add_recipe(self, user, col_name):
         self.add_control(
             "fpoint:add-recipe",
-            href=api.url_for(EachCollection, user=user),
+            href=api.url_for(EachCollection, user=user, col_name=col_name),
             title="Add new recipe to collection of user",
             method="POST",
             encoding="json",
@@ -291,7 +291,7 @@ class FoodpointBuilder(MasonBuilder):
     def add_control_edit_category(self, cat_name):
         self.add_control(
             "edit",
-            href=api.url_for(EachCategory, name=cat_name),
+            href=api.url_for(EachCategory, cat_name=cat_name),
             title="Edit this category's information",
             method="PUT",
             encoding="json",
@@ -301,16 +301,19 @@ class FoodpointBuilder(MasonBuilder):
     def add_control_edit_ethnicity(self, eth_name):
         self.add_control(
             "edit",
-            href=api.url_for(EachEthnicity, name=eth_name),
+            href=api.url_for(EachEthnicity, eth_name=eth_name),
             title="Edit this ethnicity's information",
             method="PUT",
             encoding="json",
             schema=self.ethnicity_schema()
         )
 
+
 """
 Resouce classes for this api
 """
+
+
 class AllUsers(Resource):
 
     def get(self):
@@ -324,9 +327,9 @@ class AllUsers(Resource):
             temp.add_control("self", api.url_for(EachUser, user=user.userName))
             temp.add_control("profile", USER_PROFILE)
             all_users.append(temp)
-        #create the response body, with the previous list as a field called 'items'
+        # create the response body, with the previous list as a field called 'items'
         body = FoodpointBuilder(
-            items = all_users
+            items=all_users
         )
         body.add_namespace("fpoint", LINK_RELATIONS_URL)
         body.add_control("self", api.url_for(AllUsers))
@@ -355,7 +358,9 @@ class AllUsers(Resource):
             return Response("Success", 201, headers)
         except IntegrityError:
             db.session.rollback()
-            return create_error_response(409, "Already exists", "User with userName {} already exists.".format(request.json["userName"]))
+            return create_error_response(409, "Already exists",
+                                         "User with userName {} already exists.".format(request.json["userName"]))
+
 
 class EachUser(Resource):
 
@@ -363,8 +368,8 @@ class EachUser(Resource):
         target = User.query.filter_by(userName=user).first()
         if (target):
             body = FoodpointBuilder(
-                name = target.name,
-                userName = target.userName
+                name=target.name,
+                userName=target.userName
             )
             body.add_namespace("fpoint", LINK_RELATIONS_URL)
             body.add_control("self", api.url_for(EachUser, user=target.userName))
@@ -395,7 +400,8 @@ class EachUser(Resource):
                 return Response(status=204)
             except IntegrityError:
                 db.session.rollback()
-                return create_error_response(409, "Already exists", "User with userName {} already exists.".format(request.json["userName"]))
+                return create_error_response(409, "Already exists",
+                                             "User with userName {} already exists.".format(request.json["userName"]))
         else:
             return create_error_response(404, "User not found")
 
@@ -408,7 +414,8 @@ class EachUser(Resource):
         else:
             return create_error_response(404, "User not found")
 
-#api.add_resource(CollectionsByUser, "/users/<user>/collections/")
+
+# api.add_resource(CollectionsByUser, "/users/<user>/collections/")
 class CollectionsByUser(Resource):
     def get(self, user):
         finduser = User.query.filter_by(userName=user).first()
@@ -425,7 +432,7 @@ class CollectionsByUser(Resource):
             temp.add_control("self", api.url_for(EachCollection, user=user, col_name=collection.name))
             temp.add_control("profile", Collection_PROFILE)
             user_collection.append(temp)
-        #create the response body, with the previous list as a field called 'items'
+        # create the response body, with the previous list as a field called 'items'
         body = FoodpointBuilder(
             items=user_collection
         )
@@ -457,8 +464,11 @@ class CollectionsByUser(Resource):
             return Response("Success", 201, headers)
         except IntegrityError:
             db.session.rollback()
-            return create_error_response(409, "Already exists", "Collection against user {} already exists.".format(user))
-#api.add_resource(EachCollection, "/users/<user>/collections/<col_name>/")
+            return create_error_response(409, "Already exists",
+                                         "Collection against user {} already exists.".format(user))
+
+
+# api.add_resource(EachCollection, "/users/<user>/collections/<col_name>/")
 class EachCollection(Resource):
     def get(self, user, col_name):
         finduser = User.query.filter_by(userName=user).first()
@@ -467,7 +477,7 @@ class EachCollection(Resource):
         findCol = Collection.query.filter_by(userId=finduser.id, name=col_name).first()
         if findCol is None:
             return create_error_response(404, "Collection not found")
-        #query to be tested- get all recipes with collection name of user
+        # query to be tested- get all recipes with collection name of user
         col_recipes = Recipe.query.filter(Recipe.collections.any(name=col_name)).all()
         recipe_collection = []
         for collection in col_recipes:
@@ -514,7 +524,8 @@ class EachCollection(Resource):
         description = request.json["description"]
         ingredients = request.json["ingredients"]
         rating = request.json["rating"]
-        recipe = Recipe(title=title, description=description,ingredients=ingredients,rating=rating,category=findcategory,ethnicity=findethnicity)
+        recipe = Recipe(title=title, description=description, ingredients=ingredients, rating=rating,
+                        category=findcategory, ethnicity=findethnicity)
         headers = {}
         db.session.add(recipe)
         db.session.commit()
@@ -541,7 +552,9 @@ class EachCollection(Resource):
                 return Response(status=204)
             except IntegrityError:
                 db.session.rollback()
-                return create_error_response(409, "Already exists", "Collection with name {} already exists for this user.".format(request.json["name"]))
+                return create_error_response(409, "Already exists",
+                                             "Collection with name {} already exists for this user.".format(
+                                                 request.json["name"]))
         else:
             return create_error_response(404, "Collection not found")
 
@@ -556,7 +569,9 @@ class EachCollection(Resource):
             return Response(status=204)
         else:
             return create_error_response(404, "Collection not found")
-#api.add_resource(AllCategories, "/categories/")
+
+
+# api.add_resource(AllCategories, "/categories/")
 class AllCategories(Resource):
     def get(self):
         categories = Category.query.all()
@@ -566,7 +581,7 @@ class AllCategories(Resource):
                 name=category.name,
                 description=category.description
             )
-            temp.add_control("self", api.url_for(EachCategory, name=category.name))
+            temp.add_control("self", api.url_for(EachCategory, cat_name=category.name))
             temp.add_control("profile", Category_PROFILE)
             all_categories.append(temp)
         # create the response body, with the previous list as a field called 'items'
@@ -595,11 +610,12 @@ class AllCategories(Resource):
             db.session.add(category)
             db.session.commit()
             headers = {}
-            headers["location"] = api.url_for(EachCategory, name=name)
+            headers["location"] = api.url_for(EachCategory, cat_name=name)
             return Response("Success", 201, headers)
         except IntegrityError:
             db.session.rollback()
-            return create_error_response(409, "Already exists", "Category with name {} already exists.".format(request.json["name"]))
+            return create_error_response(409, "Already exists",
+                                         "Category with name {} already exists.".format(request.json["name"]))
 
 
 class EachCategory(Resource):
@@ -611,7 +627,7 @@ class EachCategory(Resource):
                 description=target.description
             )
             body.add_namespace("fpoint", LINK_RELATIONS_URL)
-            body.add_control("self", api.url_for(EachCategory, name=cat_name))
+            body.add_control("self", api.url_for(EachCategory, cat_name=cat_name))
             body.add_control("profile", Category_PROFILE)
             body.add_control_all_categories()
             body.add_control_edit_category(cat_name)
@@ -637,7 +653,8 @@ class EachCategory(Resource):
                 return Response(status=204)
             except IntegrityError:
                 db.session.rollback()
-                return create_error_response(409, "Already exists", "Category with name {} already exists.".format(request.json["name"]))
+                return create_error_response(409, "Already exists",
+                                             "Category with name {} already exists.".format(request.json["name"]))
         else:
             return create_error_response(404, "Category not found")
 
@@ -651,7 +668,7 @@ class AllEthnicities(Resource):
                 name=ethnicity.name,
                 description=ethnicity.description
             )
-            temp.add_control("self", api.url_for(EachEthnicity, name=ethnicity.name))
+            temp.add_control("self", api.url_for(EachEthnicity, eth_name=ethnicity.name))
             temp.add_control("profile", Ethnicity_PROFILE)
             all_ethnicities.append(temp)
         # create the response body, with the previous list as a field called 'items'
@@ -680,11 +697,12 @@ class AllEthnicities(Resource):
             db.session.add(ethnicity)
             db.session.commit()
             headers = {}
-            headers["location"] = api.url_for(EachCategory, name=name)
+            headers["location"] = api.url_for(EachEthnicity, cat_name=name)
             return Response("Success", 201, headers)
         except IntegrityError:
             db.session.rollback()
-            return create_error_response(409, "Already exists", "Ethnicity with name {} already exists.".format(request.json["name"]))
+            return create_error_response(409, "Already exists",
+                                         "Ethnicity with name {} already exists.".format(request.json["name"]))
 
 
 class EachEthnicity(Resource):
@@ -696,7 +714,7 @@ class EachEthnicity(Resource):
                 description=target.description
             )
             body.add_namespace("fpoint", LINK_RELATIONS_URL)
-            body.add_control("self", api.url_for(EachEthnicity, name=eth_name))
+            body.add_control("self", api.url_for(EachEthnicity, eth_name=eth_name))
             body.add_control("profile", Ethnicity_PROFILE)
             body.add_control_all_ethnicities()
             body.add_control_edit_ethnicity(eth_name)
@@ -722,10 +740,13 @@ class EachEthnicity(Resource):
                 return Response(status=204)
             except IntegrityError:
                 db.session.rollback()
-                return create_error_response(409, "Already exists", "Ethnicity with name {} already exists.".format(request.json["name"]))
+                return create_error_response(409, "Already exists",
+                                             "Ethnicity with name {} already exists.".format(request.json["name"]))
         else:
             return create_error_response(404, "Ethnicity not found")
-#api.add_resource(EachRecipe, "/users/<user>/collections/<col_name>/<recipe_id>/")
+
+
+# api.add_resource(EachRecipe, "/users/<user>/collections/<col_name>/<recipe_id>/")
 class EachRecipe(Resource):
     def get(self, user, col_name, recipe_id):
         finduser = User.query.filter_by(userName=user).first()
@@ -735,28 +756,27 @@ class EachRecipe(Resource):
         if findCol is None:
             return create_error_response(404, "Collection not found")
         target = Recipe.query.filter_by(id=recipe_id).first()
+        if target is None:
+            return create_error_response(404, "Recipe not found")
         findEthnicity = Ethnicity.query.filter_by(id=target.ethnicityId).first()
         findCategory = Category.query.filter_by(id=target.categoryId).first()
-        if (target):
-            body = FoodpointBuilder(
-                title=target.title,
-                description=target.description,
-                ingredients=target.ingredients,
-                rating=target.rating,
-                ethnicity=findEthnicity.name,
-                category=findCategory.name
-            )
-            body.add_namespace("fpoint", LINK_RELATIONS_URL)
-            body.add_control("self", api.url_for(EachRecipe, user=user, col_name=col_name, recipe_id=recipe_id))
-            body.add_control("collection", Recipe_PROFILE)
-            body.add_control("profile", api.url_for(EachCollection, user=user,col_name=col_name))
-            body.add_control_ethnicity(target.ethnicity)
-            body.add_control_category(target.category)
-            body.add_control_edit_recipe(user, col_name, recipe_id)
-            body.add_control_delete_recipe(user, col_name, recipe_id)
-            return Response(json.dumps(body), 200, mimetype=MASON)
-        else:
-            return create_error_response(404, "Recipe not found")
+        body = FoodpointBuilder(
+            title=target.title,
+            description=target.description,
+            ingredients=target.ingredients,
+            rating=target.rating,
+            ethnicity=findEthnicity.name,
+            category=findCategory.name
+        )
+        body.add_namespace("fpoint", LINK_RELATIONS_URL)
+        body.add_control("self", api.url_for(EachRecipe, user=user, col_name=col_name, recipe_id=recipe_id))
+        body.add_control("collection", Recipe_PROFILE)
+        body.add_control("profile", api.url_for(EachCollection, user=user, col_name=col_name))
+        body.add_control_ethnicity(target.ethnicity)
+        body.add_control_category(target.category)
+        body.add_control_edit_recipe(user, col_name, recipe_id)
+        body.add_control_delete_recipe(user, col_name, recipe_id)
+        return Response(json.dumps(body), 200, mimetype=MASON)
 
     def put(self, user, col_name, recipe_id):
         if (request.json == None):

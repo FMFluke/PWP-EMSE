@@ -4,9 +4,7 @@ import tempfile
 
 from Foodpoint import create_app, db
 from Foodpoint.database import User, Recipe, Collection, Category, Ethnicity
-from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError, StatementError
-from sqlalchemy import event
 
 #All Python modules that either begin with test_ or end with _test are automatically detected by pytest.
 

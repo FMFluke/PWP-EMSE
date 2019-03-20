@@ -45,7 +45,9 @@ def create_app(test_config=None):
     from . import api
     app.register_blueprint(api.api_bp)
 
-    @app.route("/foodpoint/link-relations#")
+    from Foodpoint.utils import LINK_RELATIONS_URL
+
+    @app.route(LINK_RELATIONS_URL)
     def namespace():
         return "placeholder"
 

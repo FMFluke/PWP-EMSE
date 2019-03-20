@@ -147,9 +147,15 @@ def _check_control_delete_method(ctrl, client, obj):
 
 def _get_user_json(number=1):
     """
-    Generate valid json document for PUT and POST test of user resource
+    Generate valid json document for PUT and POST test of User resource
     """
     return {"name": "Extra Testname{}".format(number), "userName": "extratestname{}".format(number)}
+
+def _get_collection_json(number=1):
+    """
+    Generate valid json document for PUT and POST test of Collection resource
+    """
+    return {"name": "Test-Collection-{}".format(number)}
 
 class TestAllUsers(object):
     RESOURCE_URL = "/api/users/"
@@ -257,3 +263,24 @@ class TestUser(object):
         assert resp.status_code == 404
         resp = client.delete(self.INVALID_URL)
         assert resp.status_code == 404
+
+class TestCollectionsByUser(object):
+
+    RESOURCE_URL = "/api/users/user-1/collections/"
+
+    def test_get(self, client):
+        resp = client.get(self.RESOURCE_URL)
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        #in _populate_db we added one collection for each user
+        assert len(body["items"]) == 1
+        _check_namespace(client, body)
+        _check_control_post_method("fpoint:add-collection", client, _get_collection_json(), body)
+        for item in body["items"]:
+            _check_control_get_method("self", client, item)
+            _check_control_get_method("profile", client, item)
+            assert "name" in item
+            assert "author" in item
+
+    def test_post(self, client):
+        pass #not implemented yet

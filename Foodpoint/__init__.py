@@ -45,4 +45,12 @@ def create_app(test_config=None):
     from . import api
     app.register_blueprint(api.api_bp)
 
+    @app.route("/foodpoint/link-relations#")
+    def namespace():
+        return "placeholder"
+
+    @app.route("/profiles/<resource>/")
+    def profile(resource):
+        return "placeholder"
+
     return app

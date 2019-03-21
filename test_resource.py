@@ -309,7 +309,7 @@ class TestCollectionsByUser(object):
         resp = client.post(self.RESOURCE_URL, data=json.dumps(valid))
         assert resp.status_code == 415
         # test with already exists collection name
-        valid["name"] = "Collection-of-User1"
+        valid["name"] = "Collection1-of-User1"
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 409
         #remove field 'name' so document become invalid

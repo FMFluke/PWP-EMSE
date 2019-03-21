@@ -394,7 +394,7 @@ class CollectionsByUser(Resource):
         for collection in userCollection:
             temp = FoodpointBuilder(
                 name=collection.name,
-                description=collection.description
+                author=user
             )
             temp.add_control("self", api.url_for(EachCollection, user=user, col_name=collection.name))
             temp.add_control("profile", COLLECTION_PROFILE)
@@ -405,6 +405,7 @@ class CollectionsByUser(Resource):
         )
         body.add_namespace("fpoint", LINK_RELATIONS_URL)
         body.add_control("self", api.url_for(CollectionsByUser, user=user))
+        body.add_control("author",api.url_for(EachUser, user=user))
         body.add_control_add_collection(user)
         return Response(json.dumps(body), 200, mimetype=MASON)
 
@@ -451,14 +452,16 @@ class EachCollection(Resource):
         recipe_collection = []
         for collection in col_recipes:
             temp = FoodpointBuilder(
-                title=collection.title,
-                description=collection.description
+                title=collection.title
             )
             temp.add_control("self", api.url_for(EachRecipe, user=user, col_name=col_name, recipe_id=collection.id))
             temp.add_control("profile", RECIPE_PROFILE)
             recipe_collection.append(temp)
         # create the response body, with the previous list as a field called 'items'
         body = FoodpointBuilder(
+            name=col_name,
+            author=user,
+            description=findCol.description,
             items=recipe_collection
         )
         body.add_namespace("fpoint", LINK_RELATIONS_URL)
@@ -598,8 +601,7 @@ class EachCategory(Resource):
         target = Category.query.filter_by(name=cat_name).first()
         if (target):
             body = FoodpointBuilder(
-                name=target.name,
-                description=target.description
+                name=target.name
             )
             body.add_namespace("fpoint", LINK_RELATIONS_URL)
             body.add_control("self", api.url_for(EachCategory, cat_name=cat_name))
@@ -690,8 +692,7 @@ class EachEthnicity(Resource):
         target = Ethnicity.query.filter_by(name=eth_name).first()
         if (target):
             body = FoodpointBuilder(
-                name=target.name,
-                description=target.description
+                name=target.name
             )
             body.add_namespace("fpoint", LINK_RELATIONS_URL)
             body.add_control("self", api.url_for(EachEthnicity, eth_name=eth_name))

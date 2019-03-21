@@ -404,6 +404,7 @@ class CollectionsByUser(Resource):
             items=user_collection
         )
         body.add_namespace("fpoint", LINK_RELATIONS_URL)
+        #body.add_namespace("profile", COLLECTION_PROFILE)
         body.add_control("self", api.url_for(CollectionsByUser, user=user))
         body.add_control("author",api.url_for(EachUser, user=user))
         body.add_control_add_collection(user)
@@ -465,6 +466,7 @@ class EachCollection(Resource):
             items=recipe_collection
         )
         body.add_namespace("fpoint", LINK_RELATIONS_URL)
+        body.add_control("profile", COLLECTION_PROFILE)
         body.add_control("self", api.url_for(EachCollection, user=user, col_name=col_name))
         body.add_control("profile", COLLECTION_PROFILE)
         body.add_control_collections_by(user)
@@ -496,7 +498,7 @@ class EachCollection(Resource):
         title = request.json["title"]
         description = request.json["description"]
         ingredients = request.json["ingredients"]
-        rating = ""
+        rating = 0.0
         try:
             rating = request.json["rating"]
         except KeyError:

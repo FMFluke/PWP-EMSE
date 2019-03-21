@@ -43,22 +43,24 @@ def _populate_db():
         user = User(name="User Name{}".format(i),
                     userName="user-{}".format(i)
                 )
-        collection = Collection(name="Collection-of-User{}".format(i))
-        collection.user = user
+        db.session.add(user)
         category = Category(name="category{}".format(i))
         ethnicity = Ethnicity(name="ethnicity{}".format(i))
-        recipe = Recipe(title="test-recipe{}".format(i),
-                        description="description",
-                        ingredients="ingredients"
-                    )
-        recipe.category = category
-        recipe.ethnicity = ethnicity
-        collection.recipes.append(recipe)
-        db.session.add(user)
         db.session.add(ethnicity)
         db.session.add(category)
-        db.session.add(recipe)
-        db.session.add(collection)
+        for j in range(1,3):
+            collection = Collection(name="Collection{}-of-User{}".format(j, i))
+            collection.user = user
+            for k in range(1,3):
+                recipe = Recipe(title="test-col{}-recipe{}".format(j, k),
+                                description="description",
+                                ingredients="ingredients"
+                            )
+                recipe.category = category
+                recipe.ethnicity = ethnicity
+                collection.recipes.append(recipe)
+                db.session.add(recipe)
+            db.session.add(collection)
     db.session.commit()
 
 def _check_namespace(client, response):
@@ -156,6 +158,17 @@ def _get_collection_json(number=1):
     Generate valid json document for PUT and POST test of Collection resource
     """
     return {"name": "Test-Collection-{}".format(number)}
+
+def _get_recipe_json(number=1):
+    """
+    Generate valid json document for PUT and POST test of Recipe resource
+    Use in this document existing category and ethnicity added in _populate_db()
+    """
+    return {"title": "Extra-Recipe-{}".format(number),
+            "description": "Test description",
+            "ingredients": "Test ingredients",
+            "ethnicity": "ethnicity1",
+            "category": "category1"}
 
 class TestAllUsers(object):
     RESOURCE_URL = "/api/users/"
@@ -272,8 +285,8 @@ class TestCollectionsByUser(object):
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
-        #in _populate_db we added one collection for each user
-        assert len(body["items"]) == 1
+        #in _populate_db we added two collections for each user
+        assert len(body["items"]) == 2
         _check_namespace(client, body)
         _check_control_post_method("fpoint:add-collection", client, _get_collection_json(), body)
         for item in body["items"]:
@@ -283,4 +296,99 @@ class TestCollectionsByUser(object):
             assert "author" in item
 
     def test_post(self, client):
-        pass #not implemented yet
+        valid = _get_collection_json()
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 201
+        assert resp.headers["Location"].endswith(self.RESOURCE_URL + valid["name"] + "/")
+        resp = client.get(resp.headers["Location"])
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        assert body["name"] == "Test-Collection-1"
+
+        # test with wrong content type
+        resp = client.post(self.RESOURCE_URL, data=json.dumps(valid))
+        assert resp.status_code == 415
+        # test with already exists collection name
+        valid["name"] = "Collection-of-User1"
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 409
+        #remove field 'name' so document become invalid
+        valid.pop("name")
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 400
+
+class TestCollection(object):
+
+    RESOURCE_URL = "/api/users/user-1/collections/Collection1-of-User1/"
+    INVALID_URL = "/api/users/user-1/collections/Not-Exist-Collection/"
+    MODIFIED_URL = "/api/users/user-1/collections/Test-Collection-1/"
+    def test_get(self, client):
+        resp = client.get(self.RESOURCE_URL)
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        assert "name" in body
+        assert "author" in body
+        assert len(body["items"]) == 1 #there is already one pre-added recipe
+        _check_namespace(client, body)
+        _check_control_get_method("profile", client, body)
+        _check_control_get_method("fpoint:collections-by", client, body)
+        _check_control_post_method("fpoint:add-recipe", client, _get_recipe_json(), body)
+        for item in body["items"]:
+            assert "title" in item
+            _check_control_get_method("self", client, item)
+            _check_control_get_method("profile", client, item)
+        valid = _get_collection_json()
+        valid["name"] = body["name"] #avoid changing url
+        _check_control_put_method("edit", client, valid, body)
+        _check_control_delete_method("delete", client, body)
+
+        #not exist
+        resp = client.get(self.INVALID_URL)
+        assert resp.status_code == 404
+
+    def test_post(self, client):
+        pass
+
+    def test_put(self, client):
+        valid = _get_collection_json()
+
+        #test valid but don't change name, add description
+        valid["name"] = "Collection1-of-User1"
+        valid["description"] = "Test Description"
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 204
+
+        #test collection not exist
+        resp = client.put(self.INVALID_URL, json=valid)
+        assert resp.status_code == 404
+
+        #test wrong content type
+        resp = client.put(self.RESOURCE_URL, data=json.dumps(valid))
+        assert resp.status_code == 415
+
+        #test missing required field
+        valid.pop("name")
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 400
+
+        #test duplicate collection name
+        valid["name"] = "Collection2-of-User1"
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 409
+
+        #test valid with changed URL
+        valid = _get_collection_json()
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 204
+        resp = client.get(self.MODIFIED_URL)
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        assert body["name"] == valid["name"]
+
+    def test_delete(self, client):
+        resp = client.delete(self.RESOURCE_URL)
+        assert resp.status_code == 204
+        resp = client.get(self.RESOURCE_URL)
+        assert resp.status_code == 404
+        resp = client.delete(self.INVALID_URL)
+        assert resp.status_code == 404

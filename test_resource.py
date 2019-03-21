@@ -328,7 +328,7 @@ class TestCollection(object):
         body = json.loads(resp.data)
         assert "name" in body
         assert "author" in body
-        assert len(body["items"]) == 1 #there is already one pre-added recipe
+        assert len(body["items"]) == 2 #there are already two pre-added recipe
         _check_namespace(client, body)
         _check_control_get_method("profile", client, body)
         _check_control_get_method("fpoint:collections-by", client, body)

@@ -4,8 +4,8 @@ from jsonschema import validate, ValidationError
 from sqlalchemy.exc import IntegrityError
 from Foodpoint.database import User,Collection,Recipe,Category,Ethnicity
 from Foodpoint.utils import MasonBuilder, create_error_response
-from Foodpoint.utils import MASON, ERROR_PROFILE, USER_PROFILE, LINK_RELATIONS_URL,Collection_PROFILE
-from Foodpoint.utils import Category_PROFILE,Ethnicity_PROFILE, Recipe_PROFILE
+from Foodpoint.utils import MASON, ERROR_PROFILE, USER_PROFILE, LINK_RELATIONS_URL, COLLECTION_PROFILE
+from Foodpoint.utils import CATEGORY_PROFILE, ETHNICITY_PROFILE, RECIPE_PROFILE
 from Foodpoint.api import api
 from Foodpoint import db
 import json
@@ -14,7 +14,7 @@ import json
 Class for constructing Mason document for Foodpoint related resource
 """
 class FoodpointBuilder(MasonBuilder):
-    
+
     @staticmethod
     def user_schema():
         schema = {
@@ -500,7 +500,7 @@ class EachCollection(Resource):
         recipe = Recipe(title=title, description=description,ingredients=ingredients,rating=rating,category=findcategory,ethnicity=findethnicity)
         findCol.recipes.append(recipe)
         headers = {}
- 
+
         db.session.commit()
         headers["location"] = api.url_for(EachRecipe, user=user, col_name=col_name, recipe_id=recipe.id)
         return Response("Success", 201, headers)
@@ -623,7 +623,7 @@ class EachCategory(Resource):
         if (target):
             target.name = request.json["name"]
             try:
-                target.description = request.json["description"]  
+                target.description = request.json["description"]
             except KeyError:
                 pass
             try:
@@ -776,7 +776,7 @@ class EachRecipe(Resource):
             return create_error_response(404, "Category not found")
         findethnicity = Ethnicity.query.filter_by(name=request.json["ethnicity"]).first()
         if findethnicity is None:
-            return create_error_response(404, "Ethnicity not found")			
+            return create_error_response(404, "Ethnicity not found")
         target = Recipe.query.filter_by(id=recipe_id).first()
         if (target):
             try:

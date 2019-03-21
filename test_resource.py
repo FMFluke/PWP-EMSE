@@ -340,7 +340,7 @@ class TestCollection(object):
         valid = _get_collection_json()
         valid["name"] = body["name"] #avoid changing url
         _check_control_put_method("edit", client, valid, body)
-        _check_control_delete_method("delete", client, body)
+        _check_control_delete_method("fpoint:delete", client, body)
 
         #not exist
         resp = client.get(self.INVALID_URL)

@@ -466,6 +466,7 @@ class EachCollection(Resource):
         )
         body.add_namespace("fpoint", LINK_RELATIONS_URL)
         body.add_control("self", api.url_for(EachCollection, user=user, col_name=col_name))
+        body.add_control("profile", COLLECTION_PROFILE)
         body.add_control_collections_by(user)
         body.add_control_add_recipe(user, col_name)
         body.add_control_edit_collection(user, col_name)

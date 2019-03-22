@@ -458,3 +458,48 @@ class TestRecipe(object):
 
         resp = client.get(self.INVALID_URL)
         assert resp.status_code == 404
+
+    def test_put(self, client):
+        #test valid
+        valid = _get_recipe_json()
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 204
+
+        #test not exist
+        valid = _get_recipe_json()
+        resp = client.put(self.INVALID_URL, json=valid)
+        assert resp.status_code == 404
+
+        #test invalid content type
+        resp = client.put(self.RESOURCE_URL, data=json.dumps(valid))
+        assert resp.status_code == 415
+
+        #test invalid document - missing required field
+        valid.pop("title")
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 400
+
+        #test invalid document - wrong type of Rating
+        valid = _get_recipe_json()
+        valid["rating"] = "4"
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 400
+
+        #test not-exist category or ethnicity
+        valid = _get_recipe_json()
+        valid["category"] = "Not-Exist-Category"
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 409
+
+        valid = _get_recipe_json(2)
+        valid["ethnicity"] = "Not-Exist-Ethnicity"
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 409
+
+    def test_delete(self, client):
+        resp = client.delete(self.RESOURCE_URL)
+        assert resp.status_code == 204
+        resp = client.get(self.RESOURCE_URL)
+        assert resp.status_code == 404
+        resp = client.delete(self.INVALID_URL)
+        assert resp.status_code == 404

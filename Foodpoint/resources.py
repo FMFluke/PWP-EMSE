@@ -491,9 +491,9 @@ class EachCollection(Resource):
         findcategory = Category.query.filter_by(name=request.json["category"]).first()
         findethnicity = Ethnicity.query.filter_by(name=request.json["ethnicity"]).first()
         if findcategory is None:
-            return create_error_response(404, "category not found")
+            return create_error_response(409, "Category does not exist", "Category {} does not exist.".format(request.json["category"]))
         if findethnicity is None:
-            return create_error_response(404, "ethnicity not found")
+            return create_error_response(409, "Ethnicity does not exist", "Ethnicity {} does not exist.".format(request.json["ethnicity"]))
 
         title = request.json["title"]
         description = request.json["description"]
@@ -777,10 +777,10 @@ class EachRecipe(Resource):
             return create_error_response(404, "Collection not found")
         findcategory = Category.query.filter_by(name=request.json["category"]).first()
         if findcategory is None:
-            return create_error_response(404, "Category not found")
+            return create_error_response(409, "Category does not exist", "Category {} does not exist.".format(request.json["category"]))
         findethnicity = Ethnicity.query.filter_by(name=request.json["ethnicity"]).first()
         if findethnicity is None:
-            return create_error_response(404, "Ethnicity not found")
+            return create_error_response(409, "Ethnicity does not exist", "Ethnicity {} does not exist.".format(request.json["ethnicity"]))
         target = Recipe.query.filter_by(id=recipe_id).first()
         if (target):
             try:

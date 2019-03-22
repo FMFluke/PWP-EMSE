@@ -348,10 +348,8 @@ class TestCollection(object):
 
     def test_post(self, client):
         valid = _get_recipe_json()
-        valid["id"] = 100 #force id for easy url check
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 201
-        assert resp.headers["Location"].endswith(self.RESOURCE_URL + valid["id"] + "/")
         resp = client.get(resp.headers["Location"])
         assert resp.status_code == 200
         body = json.loads(resp.data)
@@ -437,5 +435,26 @@ class TestCollection(object):
         assert resp.status_code == 404
 
 class TestRecipe(object):
+
+    RESOURCE_URL = "/api/users/user-1/collections/Collection1-of-User1/1/"
+    INVALID_URL = "/api/users/user-1/collections/Collection1-of-User1/10/"
+
     def test_get(self, client):
-        pass
+        resp = client.get(self.RESOURCE_URL)
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        assert "title" in body
+        assert "ingredients" in body
+        assert "description" in body
+        assert "ethnicity" in body
+        assert "category" in body
+        _check_namespace(client, body)
+        _check_control_get_method("profile", client, body)
+        _check_control_get_method("collection", client, body)
+        _check_control_get_method("fpoint:category", client, body)
+        _check_control_get_method("fpoint:ethnicity", client, body)
+        _check_control_put_method("edit", client, _get_recipe_json(), body)
+        _check_control_delete_method("fpoint:delete", client, body)
+
+        resp = client.get(self.INVALID_URL)
+        assert resp.status_code == 404

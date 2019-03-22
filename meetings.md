@@ -26,11 +26,11 @@ We forget to include the link for the BigOven API into the wiki and we added the
 ### Minutes
 *Summary of what was discussed during the meeting*
 
-Had a good discussion about the development in the project and discussed about the testing process of the project. Assistant had gone through the test cases and suggested possible additions to the test cases. Marta's suggestions prompted as into include someadditional test cases for checking the possible error conditions. The discussion helped us to think differently from the conventional ways and improving the application acceptance.
+Had a good discussion about the development in the project and discussed about the testing process of the project. Assistant had gone through the test cases and suggested possible additions to the test cases. Marta's suggestions prompted us into include some additional test cases for checking the possible error conditions. The discussion helped us to think differently from the conventional ways and improving the application's acceptance.
 
 ### Action points
 *List here the actions points discussed with assistants*
-There was a confusion regarding the deletion of reciepes from the database and how it will reflect in the collection table. It has been rectified and come to an agreement regarding how to implement the deletion of reciepes.
+There was a confusion regarding the deletion of reciepes from the database and how it will reflect in the collection table. It has been rectified and come to an agreement regarding how to implement the deletion of reciepes and their reflection in collection table.
 
 ### Comments from staff
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*

@@ -224,7 +224,7 @@ class TestUser(object):
         _check_control_get_method("profile", client, body)
         _check_control_get_method("fpoint:all-users", client, body)
         _check_control_get_method("fpoint:collections-by", client, body)
-        #we don't want to change the unique userName when testing but otherwise we can't test delete because URL will be changed
+        #we don't want to change the unique userName when testing PUT otherwise we can't test delete because URL will be changed
         valid = _get_user_json()
         valid["userName"] = body["userName"]
         _check_control_put_method("edit", client, valid, body)

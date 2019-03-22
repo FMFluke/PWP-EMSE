@@ -347,7 +347,50 @@ class TestCollection(object):
         assert resp.status_code == 404
 
     def test_post(self, client):
-        pass
+        valid = _get_recipe_json()
+        valid["id"] = 100 #force id for easy url check
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 201
+        assert resp.headers["Location"].endswith(self.RESOURCE_URL + valid["id"] + "/")
+        resp = client.get(resp.headers["Location"])
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        assert body["title"] == "Extra-Recipe-1"
+
+        # test with wrong content type
+        resp = client.post(self.RESOURCE_URL, data=json.dumps(valid))
+        assert resp.status_code == 415
+
+        #remove field 'ingredients' so document become invalid
+        valid.pop("ingredients")
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 400
+
+        #not-exist collection
+        valid = _get_recipe_json(2)
+        resp = client.post(self.INVALID_URL, json=valid)
+        assert resp.status_code == 404
+
+        #not-exist category or ethnicity
+        valid["category"] = "Not-Exist-Category"
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 409
+
+        valid = _get_recipe_json(2)
+        valid["ethnicity"] = "Not-Exist-Ethnicity"
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 409
+
+        #valid with rating
+        valid = _get_recipe_json(2)
+        valid["rating"] = 5.0
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 201
+        resp = client.get(resp.headers["Location"])
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        assert body["title"] == "Extra-Recipe-2"
+        assert body["rating"] == 5.0
 
     def test_put(self, client):
         valid = _get_collection_json()
@@ -392,3 +435,7 @@ class TestCollection(object):
         assert resp.status_code == 404
         resp = client.delete(self.INVALID_URL)
         assert resp.status_code == 404
+
+class TestRecipe(object):
+    def test_get(self, client):
+        pass

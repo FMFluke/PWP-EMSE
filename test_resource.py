@@ -170,6 +170,18 @@ def _get_recipe_json(number=1):
             "ethnicity": "ethnicity1",
             "category": "category1"}
 
+def _get_category_json(number=1):
+    """
+    Generate valid json document for PUT and POST test of Category resource
+    """
+    return {"name": "Test-Category-{}".format(number)}
+
+def _get_ethnicity_json(number=1):
+    """
+    Generate valid json document for PUT and POST test of Ethnicity resource
+    """
+    return {"name": "Test-Ethnicity-{}".format(number)}
+
 class TestAllUsers(object):
     RESOURCE_URL = "/api/users/"
 
@@ -503,3 +515,100 @@ class TestRecipe(object):
         assert resp.status_code == 404
         resp = client.delete(self.INVALID_URL)
         assert resp.status_code == 404
+
+class TestAllCategories(object):
+
+    RESOURCE_URL = "/api/categories/"
+
+    def test_get(self, client):
+        resp = client.get(self.RESOURCE_URL)
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        assert len(body["items"]) == 3 #3 categories are added
+        _check_control_get_method("fpoint:all-users", client, body)
+        _check_control_post_method("fpoint:add-category", client, _get_category_json(), body)
+        for item in body["items"]:
+            _check_control_get_method("self", client, item)
+            _check_control_get_method("profile", client, item)
+            assert "name" in item
+            assert "description" in item
+
+    def test_post(self, client):
+        #test valid
+        valid = _get_category_json()
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 201
+        assert resp.headers["Location"].endswith(self.RESOURCE_URL + valid["name"] + "/")
+        resp = client.get(resp.headers["Location"])
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        assert body["name"] == "Test-Category-1"
+
+        #test wrong content type
+        resp = client.post(self.RESOURCE_URL, data=json.dumps(valid))
+        assert resp.status_code == 415
+
+        # test with already exists category name
+        valid["name"] = "category1"
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 409
+
+        #remove field 'name' so document become invalid
+        valid.pop("name")
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 400
+
+class TestCategory(object):
+
+    RESOURCE_URL = "/api/categories/category1/"
+    INVALID_URL = "/api/categories/non-exist-category/"
+    MODIFIED_URL = "/api/categories/Test-Category-1/"
+
+    def test_get(self, client):
+        resp = client.get(RESOURCE_URL)
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        assert body["name"] == "category1"
+        _check_control_get_method("profile", client, body)
+        _check_control_get_method("fpoint:all-categories", client, body)
+        #test put without changing url
+        valid = _get_category_json()
+        valid["name"] = "category1"
+        _check_control_put_method("edit", client, valid , body)
+
+        resp = client.get(INVALID_URL)
+        assert resp.status_code == 404
+
+    def test_put(self, client):
+        #test valid but don't change name
+        valid = _get_category_json()
+        valid["name"] = "category1"
+        valid["description"] = "test description"
+        resp = client.put(RESOURCE_URL, json=valid)
+
+        #test wrong content type
+        resp = client.put(self.RESOURCE_URL, data=json.dumps(valid))
+        assert resp.status_code == 415
+
+        #test category not exist
+        resp = client.put(self.INVALID_URL, json=valid)
+        assert resp.status_code == 404
+
+        #test duplicate name
+        valid["userName"] = "category2"
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 409
+
+        #test invalid document, missing name
+        valid.pop("name")
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 400
+
+        #test valid with changed URL
+        valid = _get_user_json()
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 204
+        resp = client.get(self.MODIFIED_URL)
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        assert body["name"] == valid["name"]

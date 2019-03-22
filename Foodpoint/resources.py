@@ -283,7 +283,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
 """
-Resouce classes for this api
+Resource classes for this api
 """
 class AllUsers(Resource):
 

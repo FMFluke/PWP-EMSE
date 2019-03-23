@@ -32,19 +32,20 @@ except IntegrityError:
 ```
 
 You can see comments inside `populate_db.py` for the documentation of using its functions to populate database.
+
 ## Testing Database
-After setting up database now we are ready to test database, put `test_database.py` under same directory of as `database.py`.
-Test cases can be executed by typing `pytest` command (assuming that you are at test_database directory), `pytest`  will automatically detect python modules that either begin with `_test` or `test_` .
+After setting up database now we are ready to test database, the file `test_database.py` contains the test cases for database testing. Test cases can be executed by typing `pytest` command (assuming that you are at test_database directory). Note that `pytest`  will automatically detect all python modules that either begin with `_test` or `test_` . If you want to test just database, user `pytest test_database.py`  
 After executing that command you can check all details in command window about test cases i.e. passed or failed .
 
 An example code of adding new test case into test_database.py would be:
 ```python
-def test_create_user(db_handle):
+def test_create_user(app):
     """
     Tests that user is added properly in user model.
     """
-    user = _get_user()
-    db_handle.session.add(user)
-    db_handle.session.commit()
-    assert User.query.count() == 1
+    with app.app_context():
+        user = _get_user()
+        db.session.add(user)
+        db.session.commit()
+        assert User.query.count() == 1
 ```

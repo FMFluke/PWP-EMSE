@@ -7,7 +7,7 @@
 -----
 # Database setup (DL2)
 ## Requirements
-This project requires `Flask`, `pysqlite3`, `flask-sqlalchemy`. Using `ipython` as console is also recommended but not required.    
+This project requires `Flask`, `pysqlite3`, `flask-sqlalchemy`, `flask-restful`, `jsonschema` . Using `ipython` as console is also recommended but not required.    
 For testing, we also requires `pytest` and `pytest-cov`.    
 All dependencies can be installed using `pip install` command followed by the name of library, or alternatively execute this command in terminal to install all libraries needed (recommended because it pinpoints the correct version):     
 `pip install -r requirements.txt`    

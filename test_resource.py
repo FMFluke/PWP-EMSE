@@ -139,6 +139,8 @@ def _check_control_delete_method(ctrl, client, obj):
     Checks a DELETE type control from a JSON object be it root document or an
     item in a collection. Checks the contrl's method in addition to its "href".
     Also checks that using the control results in the correct status code of 204.
+
+    This function is adapted from example in exercise 3 testing part.
     """
 
     href = obj["@controls"][ctrl]["href"]
@@ -186,6 +188,7 @@ class TestAllUsers(object):
     RESOURCE_URL = "/api/users/"
 
     def test_get(self, client):
+        """Tests for AllUsers GET method"""
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
@@ -199,6 +202,7 @@ class TestAllUsers(object):
             assert "userName" in item
 
     def test_post(self, client):
+        """Tests for AllUsers POST method"""
         valid = _get_user_json()
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 201
@@ -227,6 +231,7 @@ class TestUser(object):
     MODIFIED_URL = "/api/users/extratestname1/"
 
     def test_get(self, client):
+        """Tests for User GET method"""
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
@@ -242,11 +247,12 @@ class TestUser(object):
         _check_control_put_method("edit", client, valid, body)
         _check_control_delete_method("fpoint:delete", client, body)
 
-        #not exist
+        #user not exist
         resp = client.get(self.INVALID_URL)
         assert resp.status_code == 404
 
     def test_put(self, client):
+        """Tests for User PUT method"""
         valid = _get_user_json()
 
         #test valid but don't change userName
@@ -282,6 +288,7 @@ class TestUser(object):
         assert body["name"] == valid["name"]
 
     def test_delete(self, client):
+        """Tests for User DELETE method"""
         resp = client.delete(self.RESOURCE_URL)
         assert resp.status_code == 204
         resp = client.get(self.RESOURCE_URL)
@@ -294,6 +301,7 @@ class TestCollectionsByUser(object):
     RESOURCE_URL = "/api/users/user-1/collections/"
 
     def test_get(self, client):
+        """Tests for CollectionsByUser GET method"""
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
@@ -308,6 +316,7 @@ class TestCollectionsByUser(object):
             assert "author" in item
 
     def test_post(self, client):
+        """Tests for CollectionsByUser POST method"""
         valid = _get_collection_json()
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 201
@@ -334,7 +343,9 @@ class TestCollection(object):
     RESOURCE_URL = "/api/users/user-1/collections/Collection1-of-User1/"
     INVALID_URL = "/api/users/user-1/collections/Not-Exist-Collection/"
     MODIFIED_URL = "/api/users/user-1/collections/Test-Collection-1/"
+
     def test_get(self, client):
+        """Tests for Collection GET method"""
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
@@ -359,6 +370,7 @@ class TestCollection(object):
         assert resp.status_code == 404
 
     def test_post(self, client):
+        """Tests for Collection POST method"""
         valid = _get_recipe_json()
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 201
@@ -403,6 +415,7 @@ class TestCollection(object):
         assert body["rating"] == 5.0
 
     def test_put(self, client):
+        """Tests for Collection PUT method"""
         valid = _get_collection_json()
 
         #test valid but don't change name, add description
@@ -439,10 +452,12 @@ class TestCollection(object):
         assert body["name"] == valid["name"]
 
     def test_delete(self, client):
+        """Tests for Collection DELETE method"""
         resp = client.delete(self.RESOURCE_URL)
         assert resp.status_code == 204
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 404
+        #not exist collection
         resp = client.delete(self.INVALID_URL)
         assert resp.status_code == 404
 
@@ -452,6 +467,7 @@ class TestRecipe(object):
     INVALID_URL = "/api/users/user-1/collections/Collection1-of-User1/10/"
 
     def test_get(self, client):
+        """Tests for Recipe GET method"""
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
@@ -472,6 +488,7 @@ class TestRecipe(object):
         assert resp.status_code == 404
 
     def test_put(self, client):
+        """Tests for Recipe PUT method"""
         #test valid
         valid = _get_recipe_json()
         resp = client.put(self.RESOURCE_URL, json=valid)
@@ -509,6 +526,7 @@ class TestRecipe(object):
         assert resp.status_code == 409
 
     def test_delete(self, client):
+        """Tests for Recipe DELETE method"""
         resp = client.delete(self.RESOURCE_URL)
         assert resp.status_code == 204
         resp = client.get(self.RESOURCE_URL)
@@ -521,6 +539,7 @@ class TestAllCategories(object):
     RESOURCE_URL = "/api/categories/"
 
     def test_get(self, client):
+        """Tests for AllCategories GET method"""
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
@@ -535,6 +554,7 @@ class TestAllCategories(object):
             assert "description" in item
 
     def test_post(self, client):
+        """Tests for AllCategories POST method"""
         #test valid
         valid = _get_category_json()
         resp = client.post(self.RESOURCE_URL, json=valid)
@@ -566,6 +586,7 @@ class TestCategory(object):
     MODIFIED_URL = "/api/categories/Test-Category-1/"
 
     def test_get(self, client):
+        """Tests for Category GET method"""
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
@@ -582,6 +603,7 @@ class TestCategory(object):
         assert resp.status_code == 404
 
     def test_put(self, client):
+        """Tests for Category PUT method"""
         #test valid but don't change name
         valid = _get_category_json()
         valid["name"] = "category1"
@@ -620,6 +642,7 @@ class TestAllEthnicities(object):
     RESOURCE_URL = "/api/ethnicities/"
 
     def test_get(self, client):
+        """Tests for AllEthnicities GET method"""
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
@@ -634,6 +657,7 @@ class TestAllEthnicities(object):
             assert "description" in item
 
     def test_post(self, client):
+        """Tests for AllEthnicities POST method"""
         #test valid
         valid = _get_ethnicity_json()
         resp = client.post(self.RESOURCE_URL, json=valid)
@@ -665,6 +689,7 @@ class TestEthnicity(object):
     MODIFIED_URL = "/api/ethnicities/Test-Ethnicity-1/"
 
     def test_get(self, client):
+        """Tests for Ethnicity GET method"""
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
@@ -681,6 +706,7 @@ class TestEthnicity(object):
         assert resp.status_code == 404
 
     def test_put(self, client):
+        """Tests for Ethnicity PUT method"""
         #test valid but don't change name
         valid = _get_ethnicity_json()
         valid["name"] = "ethnicity1"

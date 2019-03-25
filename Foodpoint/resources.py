@@ -740,11 +740,12 @@ class EachRecipe(Resource):
         if findCol is None:
             return create_error_response(404, "Collection not found")
         target = Recipe.query.filter_by(id=recipe_id).first()
-        if target is None:
-            return create_error_response(404, "Recipe not found")
-        findEthnicity = Ethnicity.query.filter_by(id=target.ethnicityId).first()
-        findCategory = Category.query.filter_by(id=target.categoryId).first()
-        body = FoodpointBuilder(
+        #if target is None:
+            #return create_error_response(404, "Recipe not found") 
+        if target in findCol.recipes:
+            findEthnicity = Ethnicity.query.filter_by(id=target.ethnicityId).first()
+            findCategory = Category.query.filter_by(id=target.categoryId).first()
+            body = FoodpointBuilder(
                 title=target.title,
                 description=target.description,
                 ingredients=target.ingredients,
@@ -752,15 +753,18 @@ class EachRecipe(Resource):
                 ethnicity=findEthnicity.name,
                 category=findCategory.name
             )
-        body.add_namespace("fpoint", LINK_RELATIONS_URL)
-        body.add_control("self", api.url_for(EachRecipe, user=user, col_name=col_name, recipe_id=recipe_id))
-        body.add_control("collection", RECIPE_PROFILE)
-        body.add_control("profile", api.url_for(EachCollection, user=user,col_name=col_name))
-        body.add_control_ethnicity(target.ethnicity.name)
-        body.add_control_category(target.category.name)
-        body.add_control_edit_recipe(user, col_name, recipe_id)
-        body.add_control_delete_recipe(user, col_name, recipe_id)
-        return Response(json.dumps(body), 200, mimetype=MASON)
+            body.add_namespace("fpoint", LINK_RELATIONS_URL)
+            body.add_control("self", api.url_for(EachRecipe, user=user, col_name=col_name, recipe_id=recipe_id))
+            body.add_control("collection", RECIPE_PROFILE)
+            body.add_control("profile", api.url_for(EachCollection, user=user,col_name=col_name))
+            body.add_control_ethnicity(target.ethnicity.name)
+            body.add_control_category(target.category.name)
+            body.add_control_edit_recipe(user, col_name, recipe_id)
+            body.add_control_delete_recipe(user, col_name, recipe_id)
+            return Response(json.dumps(body), 200, mimetype=MASON)
+        else :
+            return create_error_response(404, "Recipe not found")
+        
 
     def put(self, user, col_name, recipe_id):
         if (request.json == None):
@@ -775,14 +779,23 @@ class EachRecipe(Resource):
         findCol = Collection.query.filter_by(userId=finduser.id, name=col_name).first()
         if findCol is None:
             return create_error_response(404, "Collection not found")
+        #if findcategory is None:
+            #return create_error_response(409, "Category does not exist", "Category {} does not exist.".format(request.json["category"]))
+        #if findethnicity is None:
+            #return create_error_response(409, "Ethnicity does not exist", "Ethnicity {} does not exist.".format(request.json["ethnicity"]))
         findcategory = Category.query.filter_by(name=request.json["category"]).first()
+        findethnicity = Ethnicity.query.filter_by(name=request.json["ethnicity"]).first()
         if findcategory is None:
             return create_error_response(409, "Category does not exist", "Category {} does not exist.".format(request.json["category"]))
         findethnicity = Ethnicity.query.filter_by(name=request.json["ethnicity"]).first()
         if findethnicity is None:
             return create_error_response(409, "Ethnicity does not exist", "Ethnicity {} does not exist.".format(request.json["ethnicity"]))
+        #if target is None:
+            #return create_error_response(404, "Recipe not found")
         target = Recipe.query.filter_by(id=recipe_id).first()
-        if (target):
+        if target not in findCol.recipes:
+            return create_error_response(404, "Recipe not found")
+        if (target in findCol.recipes):
             try:
                 target.rating = request.json["rating"]
             except KeyError:
@@ -805,9 +818,12 @@ class EachRecipe(Resource):
         if findCol is None:
             return create_error_response(404, "Collection not found")
         target = Recipe.query.filter_by(id=recipe_id).first()
-        if (target):
+        #if target is None:
+            #return create_error_response(404, "Recipe not found")
+        if (target in findCol.recipes):
             db.session.delete(target)
             db.session.commit()
             return Response(status=204)
         else:
             return create_error_response(404, "Recipe not found")
+

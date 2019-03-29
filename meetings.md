@@ -23,7 +23,7 @@ We forget to include the link for the BigOven API into the wiki and we added the
 * **ASSISTANTS:** Marta Cortés Orduña
 * **GRADE:** *To be filled by course staff*
 
-### Minutes
+### Minutes 25 Minutes
 *Summary of what was discussed during the meeting*
 
 Had a good discussion about the development in the project and discussed about the testing process of the project. Assistant had gone through the test cases and suggested possible additions to the test cases. Marta's suggestions prompted us into include some additional test cases for checking the possible error conditions. The discussion helped us to think differently from the conventional ways and improving the application's acceptance.
@@ -40,7 +40,7 @@ There was a confusion regarding the deletion of reciepes from the database and h
 * **ASSISTANTS:** Mika Oja
 * **GRADE:** *To be filled by course staff*
 
-### Minutes
+### Minutes 30 minutes
 *Summary of what was discussed during the meeting*
 
 ### Action points

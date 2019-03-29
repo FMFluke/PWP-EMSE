@@ -30,6 +30,7 @@ Had a good discussion about the development in the project and discussed about t
 
 ### Action points
 *List here the actions points discussed with assistants*
+
 There was a confusion regarding the deletion of reciepes from the database and how it will reflect in the collection table. It has been rectified and come to an agreement regarding how to implement the deletion of reciepes and their reflection in collection table.
 
 ### Comments from staff
@@ -43,8 +44,12 @@ There was a confusion regarding the deletion of reciepes from the database and h
 ### Minutes 30 minutes
 *Summary of what was discussed during the meeting*
 
+State diagram and resource relations were explained and clarrified doubts regarding our project to the staff as course staff is different from previous meetings. We also explained how resources are exposed to the uniform interface methods. Staff goes through the documentation and find out that everything is self explantory and understandable in first look.
+
 ### Action points
 *List here the actions points discussed with assistants*
+
+Some suggestions were mentioned about adding more relations between Ethnicity and recipe resources and how to move forward with the next deadline.
 
 
 ### Comments from staff

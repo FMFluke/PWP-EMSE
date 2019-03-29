@@ -36,8 +36,8 @@ There was a confusion regarding the deletion of reciepes from the database and h
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*
 
 ## Meeting 3.
-* **DATE:**
-* **ASSISTANTS:**
+* **DATE:** 28/03/2019
+* **ASSISTANTS:** Mika Oja
 * **GRADE:** *To be filled by course staff*
 
 ### Minutes
@@ -56,7 +56,9 @@ There was a confusion regarding the deletion of reciepes from the database and h
 * **GRADE:** *To be filled by course staff*
 
 ### Minutes
-*Summary of what was discussed during the meeting*
+*Summary of what was discussed during the meeting* 
+
+
 
 ### Action points
 *List here the actions points discussed with assistants*

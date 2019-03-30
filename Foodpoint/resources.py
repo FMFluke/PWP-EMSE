@@ -14,9 +14,13 @@ import json
 Class for constructing Mason document for Foodpoint related resource
 """
 class FoodpointBuilder(MasonBuilder):
-
+    
     @staticmethod
     def user_schema():
+        '''
+            For validating request to updating a new user
+            check for required parameters and type
+            '''
         schema = {
             "type": "object",
             "required": ["name", "userName"]
@@ -34,6 +38,10 @@ class FoodpointBuilder(MasonBuilder):
 
     @staticmethod
     def collection_schema():
+        '''
+            For validating request to updating new collection
+            check for required parameters and type
+            '''
         schema = {
             "type": "object",
             "required": ["name"]
@@ -51,6 +59,10 @@ class FoodpointBuilder(MasonBuilder):
 
     @staticmethod
     def category_schema():
+        '''
+            For validating request to updating new category
+            check for required parameters and type
+            '''
         schema = {
             "type": "object",
             "required": ["name"]
@@ -68,6 +80,10 @@ class FoodpointBuilder(MasonBuilder):
 
     @staticmethod
     def ethnicity_schema():
+        '''
+            For validating request to updating new ethnicity
+            check for required parameters and type
+            '''
         schema = {
             "type": "object",
             "required": ["name"]
@@ -85,6 +101,10 @@ class FoodpointBuilder(MasonBuilder):
 
     @staticmethod
     def recipe_schema():
+        '''
+            For validating request to updating new recipe
+            check for required parameters and type
+            '''
         schema = {
             "type": "object",
             "required": ["title", "description", "ingredients", "ethnicity", "category"]
@@ -117,6 +137,7 @@ class FoodpointBuilder(MasonBuilder):
         return schema
 
     def add_control_all_users(self):
+        '''Leads to a resource that has a list of all users known to the API.'''
         self.add_control(
             "fpoint:all-users",
             href=api.url_for(AllUsers),
@@ -124,6 +145,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_collections_by(self, user):
+        '''Leads to a resource that has a list of all collections owned by a user.'''
         self.add_control(
             "fpoint:collections-by",
             href=api.url_for(CollectionsByUser, user=user),
@@ -131,6 +153,8 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_add_user(self):
+        '''To add a user to the AllUsers resource.
+            Accessed with POST and includes JSON schema'''
         self.add_control(
             "fpoint:add-user",
             href=api.url_for(AllUsers),
@@ -141,6 +165,8 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_all_categories(self):
+        '''Leads to a resource that has a list of all categories of recipe known to the API.
+            '''
         self.add_control(
             "fpoint:all-categories",
             href=api.url_for(AllCategories),
@@ -148,6 +174,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_all_ethnicities(self):
+        '''Leads to a resource that has a list of all ethnicities of recipe known to the API.'''
         self.add_control(
             "fpoint:all-ethnicities",
             href=api.url_for(AllEthnicities),
@@ -155,6 +182,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_category(self,cat_name):
+        '''Leads to a resource that represent and contain information of a category of recipe.'''
         self.add_control(
             "fpoint:category",
             href=api.url_for(EachCategory, cat_name=cat_name),
@@ -162,6 +190,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_ethnicity(self,eth_name):
+        '''Leads to a resource that represent and contain information of an ethnicity of recipe.'''
         self.add_control(
             "fpoint:ethnicity",
             href=api.url_for(EachEthnicity, eth_name=eth_name),
@@ -169,6 +198,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_edit_user(self, user):
+        '''For editing user information'''
         self.add_control(
             "edit",
             href=api.url_for(EachUser, user=user),
@@ -179,6 +209,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_delete_user(self, user):
+        '''For deleting a user'''
         self.add_control(
             "fpoint:delete",
             href=api.url_for(EachUser, user=user),
@@ -187,6 +218,8 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_add_collection(self, user):
+        '''To add a collection to the CollectionsByUser resource.
+            Accessed with POST and control includes a JSON schema'''
         self.add_control(
             "fpoint:add-collection",
             href=api.url_for(CollectionsByUser, user=user),
@@ -197,6 +230,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_edit_collection(self, user, col_name):
+        '''Will edit the collection resorces'''
         self.add_control(
             "edit",
             href=api.url_for(EachCollection, user=user, col_name=col_name),
@@ -225,6 +259,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_delete_recipe(self, user, col_name, recipe_id):
+        ''' For deleting recipe from collection'''
         self.add_control(
             "fpoint:delete",
             href=api.url_for(EachRecipe, user=user, col_name=col_name, recipe_id=recipe_id),
@@ -233,6 +268,8 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_add_recipe(self, user, col_name):
+        '''To add a recipe to the collection resource.
+            Accessed with POST and includes JSON schema'''
         self.add_control(
             "fpoint:add-recipe",
             href=api.url_for(EachCollection, user=user, col_name=col_name),
@@ -243,6 +280,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_add_category(self):
+        ''' For adding category'''
         self.add_control(
             "fpoint:add-category",
             href=api.url_for(AllCategories),
@@ -253,6 +291,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_add_ethnicity(self):
+        ''' For adding ethnicity'''
         self.add_control(
             "fpoint:add-ethnicity",
             href=api.url_for(AllEthnicities),
@@ -263,6 +302,8 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_edit_category(self, cat_name):
+        ''' Changing category.
+        Parameters: category name'''
         self.add_control(
             "edit",
             href=api.url_for(EachCategory, cat_name=cat_name),
@@ -273,6 +314,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_edit_ethnicity(self, eth_name):
+        ''' For changing ethnicity of a recipe'''
         self.add_control(
             "edit",
             href=api.url_for(EachEthnicity, eth_name=eth_name),
@@ -731,8 +773,11 @@ class EachEthnicity(Resource):
         else:
             return create_error_response(404, "Ethnicity not found")
 #api.add_resource(EachRecipe, "/users/<user>/collections/<col_name>/<recipe_id>/")
+''' Class for modifying recipes in collection'''
+
 class EachRecipe(Resource):
     def get(self, user, col_name, recipe_id):
+        ''' For getting recipe details'''
         finduser = User.query.filter_by(userName=user).first()
         if finduser is None:
             return create_error_response(404, "User not found")
@@ -806,6 +851,7 @@ class EachRecipe(Resource):
             return create_error_response(404, "Recipe not found")
 
     def delete(self, user, col_name, recipe_id):
+        '''For deleting a recipe from collection'''
         finduser = User.query.filter_by(userName=user).first()
         if finduser is None:
             return create_error_response(404, "User not found")

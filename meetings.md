@@ -13,7 +13,7 @@ Explained about the FoodPoint API we are going to develop and different applicat
 ### Action points
 *List here the actions points discussed with assistants*
 
-We forget to include the link for the BigOven API into the wiki and we added the links as discussed in the meetings.
+We forget to include the link for the BigOven API into the wiki and we added the links as discussed in the meetings.Also updated the documention for the project.
 
 ### Comments from staff
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*
@@ -43,6 +43,7 @@ There was a confusion regarding the deletion of reciepes from the database and h
 
 ### Minutes 30 minutes
 *Summary of what was discussed during the meeting*
+
 
 State diagram and resource relations were explained and clarrified doubts regarding our project to the staff as course staff is different from previous meetings. We also explained how resources are exposed to the uniform interface methods. Staff goes through the documentation and find out that everything is self explantory and understandable in first look.
 

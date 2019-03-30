@@ -37,7 +37,7 @@ There was a confusion regarding the deletion of reciepes from the database and h
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*
 
 ## Meeting 3.
-* **DATE:** 28/03/2019
+* **DATE:** 28/03/2019 03.00 PM
 * **ASSISTANTS:** Mika Oja
 * **GRADE:** *To be filled by course staff*
 

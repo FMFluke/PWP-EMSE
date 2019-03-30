@@ -740,8 +740,7 @@ class EachRecipe(Resource):
         if findCol is None:
             return create_error_response(404, "Collection not found")
         target = Recipe.query.filter_by(id=recipe_id).first()
-        #if target is None:
-            #return create_error_response(404, "Recipe not found") 
+        
         if target in findCol.recipes:
             findEthnicity = Ethnicity.query.filter_by(id=target.ethnicityId).first()
             findCategory = Category.query.filter_by(id=target.categoryId).first()
@@ -779,10 +778,7 @@ class EachRecipe(Resource):
         findCol = Collection.query.filter_by(userId=finduser.id, name=col_name).first()
         if findCol is None:
             return create_error_response(404, "Collection not found")
-        #if findcategory is None:
-            #return create_error_response(409, "Category does not exist", "Category {} does not exist.".format(request.json["category"]))
-        #if findethnicity is None:
-            #return create_error_response(409, "Ethnicity does not exist", "Ethnicity {} does not exist.".format(request.json["ethnicity"]))
+       
         findcategory = Category.query.filter_by(name=request.json["category"]).first()
         findethnicity = Ethnicity.query.filter_by(name=request.json["ethnicity"]).first()
         if findcategory is None:
@@ -790,8 +786,7 @@ class EachRecipe(Resource):
         findethnicity = Ethnicity.query.filter_by(name=request.json["ethnicity"]).first()
         if findethnicity is None:
             return create_error_response(409, "Ethnicity does not exist", "Ethnicity {} does not exist.".format(request.json["ethnicity"]))
-        #if target is None:
-            #return create_error_response(404, "Recipe not found")
+        
         target = Recipe.query.filter_by(id=recipe_id).first()
         if target not in findCol.recipes:
             return create_error_response(404, "Recipe not found")
@@ -818,8 +813,7 @@ class EachRecipe(Resource):
         if findCol is None:
             return create_error_response(404, "Collection not found")
         target = Recipe.query.filter_by(id=recipe_id).first()
-        #if target is None:
-            #return create_error_response(404, "Recipe not found")
+        
         if (target in findCol.recipes):
             db.session.delete(target)
             db.session.commit()

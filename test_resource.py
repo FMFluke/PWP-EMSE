@@ -517,12 +517,12 @@ class TestRecipe(object):
         #test not-exist category or ethnicity
         valid = _get_recipe_json()
         valid["category"] = "Not-Exist-Category"
-        resp = client.post(self.RESOURCE_URL, json=valid)
+        resp = client.put(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 409
 
         valid = _get_recipe_json(2)
         valid["ethnicity"] = "Not-Exist-Ethnicity"
-        resp = client.post(self.RESOURCE_URL, json=valid)
+        resp = client.put(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 409
 
     def test_delete(self, client):

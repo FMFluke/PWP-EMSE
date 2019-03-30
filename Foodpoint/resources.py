@@ -416,6 +416,7 @@ class EachUser(Resource):
             return create_error_response(404, "User not found")
 
     def delete(self, user):
+        ''' For deleting a user'''
         target = User.query.filter_by(userName=user).first()
         if (target):
             db.session.delete(target)
@@ -425,8 +426,10 @@ class EachUser(Resource):
             return create_error_response(404, "User not found")
 
 #api.add_resource(CollectionsByUser, "/users/<user>/collections/")
+''' Class for getting recipe collections based on user'''
 class CollectionsByUser(Resource):
     def get(self, user):
+        ''' For getting the collection'''
         finduser = User.query.filter_by(userName=user).first()
         if finduser is None:
             return create_error_response(404, "User not found")
@@ -453,6 +456,7 @@ class CollectionsByUser(Resource):
         return Response(json.dumps(body), 200, mimetype=MASON)
 
     def post(self, user):
+        '''For adding collections by a user'''
         finduser = User.query.filter_by(userName=user).first()
         if finduser is None:
             return create_error_response(404, "User not found")
@@ -481,8 +485,10 @@ class CollectionsByUser(Resource):
             db.session.rollback()
             return create_error_response(409, "Already exists", "Collection against user {} already exists.".format(user))
 #api.add_resource(EachCollection, "/users/<user>/collections/<col_name>/")
+'''Class for getting each collection'''
 class EachCollection(Resource):
     def get(self, user, col_name):
+        ''' For getting a collection based on user'''
         finduser = User.query.filter_by(userName=user).first()
         if finduser is None:
             return create_error_response(404, "User not found")
@@ -518,6 +524,7 @@ class EachCollection(Resource):
         return Response(json.dumps(body), 200, mimetype=MASON)
 
     def post(self, user, col_name):
+        ''' For modifying a collection based on user'''
         finduser = User.query.filter_by(userName=user).first()
         if finduser is None:
             return create_error_response(404, "User not found")
@@ -554,6 +561,7 @@ class EachCollection(Resource):
         return Response("Success", 201, headers)
 
     def put(self, user, col_name):
+        ''' For changing a collection based on user'''
         if (request.json == None):
             return create_error_response(415, "Unsupported media type", "Request content type must be JSON")
         try:
@@ -581,6 +589,7 @@ class EachCollection(Resource):
             return create_error_response(404, "Collection not found")
 
     def delete(self, user, col_name):
+        ''' For deleting collection from resource'''
         finduser = User.query.filter_by(userName=user).first()
         if finduser is None:
             return create_error_response(404, "User not found")
@@ -592,8 +601,10 @@ class EachCollection(Resource):
         else:
             return create_error_response(404, "Collection not found")
 #api.add_resource(AllCategories, "/categories/")
+''' Class for managing all categories'''
 class AllCategories(Resource):
     def get(self):
+        ''' For getting allcategoris in the resource'''
         categories = Category.query.all()
         all_categories = []
         for category in categories:
@@ -615,6 +626,7 @@ class AllCategories(Resource):
         return Response(json.dumps(body), 200, mimetype=MASON)
 
     def post(self):
+        '''For modifying the categories'''
         if (request.json == None):
             return create_error_response(415, "Unsupported media type", "Request content type must be JSON")
 
@@ -640,9 +652,10 @@ class AllCategories(Resource):
             db.session.rollback()
             return create_error_response(409, "Already exists", "Category with name {} already exists.".format(request.json["name"]))
 
-
+''' For manipulating each category'''
 class EachCategory(Resource):
     def get(self, cat_name):
+        '''For getting category from the resource'''
         target = Category.query.filter_by(name=cat_name).first()
         if (target):
             body = FoodpointBuilder(
@@ -658,6 +671,7 @@ class EachCategory(Resource):
             return create_error_response(404, "Category not found")
 
     def put(self, cat_name):
+        '''For modifying the categories resource'''
         if (request.json == None):
             return create_error_response(415, "Unsupported media type", "Request content type must be JSON")
 
@@ -682,9 +696,10 @@ class EachCategory(Resource):
         else:
             return create_error_response(404, "Category not found")
 
-
+'''Class for manipulating ethnicities'''
 class AllEthnicities(Resource):
     def get(self):
+        '''For getting ethnicities'''
         ethnicities = Ethnicity.query.all()
         all_ethnicities = []
         for ethnicity in ethnicities:
@@ -706,6 +721,7 @@ class AllEthnicities(Resource):
         return Response(json.dumps(body), 200, mimetype=MASON)
 
     def post(self):
+        '''For changing ethnicity for a recipe'''
         if (request.json == None):
             return create_error_response(415, "Unsupported media type", "Request content type must be JSON")
 

@@ -51,6 +51,6 @@ def test_create_user(app):
 ```
 
 ## RESTful API testing:
-After setting up the resources we have to test our API. The file test_resource.py contains the test cases for API testing. Test cases can be executed by typing 'pytest test_resource.py' command (assuming that you are at test_resource.py directory).
+After setting up the resources we have to test our API. The file `test_resource.py` contains the test cases for API testing. Test cases can be executed by typing `pytest test_resource.py` command (assuming that you are at `test_resource.py` directory).
 After executing that command you can check all details in command window about test cases i.e. passed or failed.
 

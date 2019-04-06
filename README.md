@@ -50,7 +50,7 @@ def test_create_user(app):
         assert User.query.count() == 1
 ```
 
-##Running and testing the API
+## Running and testing the API
 With Database configured and set up properly, you can start to run the API by using command `flask run`. (Remember that the FLASK_APP has to be set first, as descriobed in database setup).
 
 The test cases for API functionalities are in `test_resource.py`. To run the test of API, use command `pytest test_resource.py`. If you want to see the coverage of this test, run `pytest --cov-report term-missing --cov=Foodpoint test_resource.py` instead.

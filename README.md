@@ -18,7 +18,7 @@ Database will be created according to the configuration of the app which could b
 
 To populate database with initial example values, run the command `flask populate_db`
 
-If you want to populate it manually, you will need to import `populate_db.py` and utilise its functions there. These functions will point to the database file as configured in `creat_app` function automatically.
+If you want to populate it manually, you will need to import `populate_db.py` and utilise its functions there. These functions will point to the database file as configured in `create_app` function automatically.
 
 An example code of adding a user into empty database would be:    
 ```python
@@ -50,7 +50,7 @@ def test_create_user(app):
         assert User.query.count() == 1
 ```
 
-## RESTful API testing:
-After setting up the resources we have to test our API. The file `test_resource.py` contains the test cases for API testing. Test cases can be executed by typing `pytest test_resource.py` command (assuming that you are at `test_resource.py` directory).
-After executing that command you can check all details in command window about test cases i.e. passed or failed.
+##Running and testing the API
+With Database configured and set up properly, you can start to run the API by using command `flask run`. (Remember that the FLASK_APP has to be set first, as descriobed in database setup).
 
+The test cases for API functionalities are in `test_resource.py`. To run the test of API, use command `pytest test_resource.py`. If you want to see the coverage of this test, run `pytest --cov-report term-missing --cov=Foodpoint test_resource.py` instead.

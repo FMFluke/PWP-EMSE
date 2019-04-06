@@ -299,6 +299,7 @@ class TestUser(object):
 class TestCollectionsByUser(object):
 
     RESOURCE_URL = "/api/users/user-1/collections/"
+    INVALID_URL = "/api/users/not-user/collections/"
 
     def test_get(self, client):
         """Tests for CollectionsByUser GET method"""
@@ -315,6 +316,10 @@ class TestCollectionsByUser(object):
             assert "name" in item
             assert "author" in item
 
+        #test not existing user
+        resp = client.get(self.INVALID_URL)
+        assert resp.status_code == 404
+
     def test_post(self, client):
         """Tests for CollectionsByUser POST method"""
         valid = _get_collection_json()
@@ -326,6 +331,9 @@ class TestCollectionsByUser(object):
         body = json.loads(resp.data)
         assert body["name"] == "Test-Collection-1"
 
+        #test with not existing user
+        resp = client.post(self.INVALID_URL, json=valid)
+        assert resp.status_code == 404
         # test with wrong content type
         resp = client.post(self.RESOURCE_URL, data=json.dumps(valid))
         assert resp.status_code == 415
@@ -338,10 +346,12 @@ class TestCollectionsByUser(object):
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 400
 
+
 class TestCollection(object):
 
     RESOURCE_URL = "/api/users/user-1/collections/Collection1-of-User1/"
     INVALID_URL = "/api/users/user-1/collections/Not-Exist-Collection/"
+    INVALID_URL_NOUSER = "/api/users/not-user/collections/Collection1-of-User1/"
     MODIFIED_URL = "/api/users/user-1/collections/Test-Collection-1/"
 
     def test_get(self, client):
@@ -365,8 +375,12 @@ class TestCollection(object):
         _check_control_put_method("edit", client, valid, body)
         _check_control_delete_method("fpoint:delete", client, body)
 
-        #not exist
+        #test collection not exist
         resp = client.get(self.INVALID_URL)
+        assert resp.status_code == 404
+
+        #test user not exist
+        resp = client.get(self.INVALID_URL_NOUSER)
         assert resp.status_code == 404
 
     def test_post(self, client):
@@ -391,6 +405,10 @@ class TestCollection(object):
         #not-exist collection
         valid = _get_recipe_json(2)
         resp = client.post(self.INVALID_URL, json=valid)
+        assert resp.status_code == 404
+
+        #not-exist user
+        resp = client.post(self.INVALID_URL_NOUSER, json=valid)
         assert resp.status_code == 404
 
         #not-exist category or ethnicity
@@ -428,6 +446,10 @@ class TestCollection(object):
         resp = client.put(self.INVALID_URL, json=valid)
         assert resp.status_code == 404
 
+        #test user not exist
+        resp = client.put(self.INVALID_URL_NOUSER, json=valid)
+        assert resp.status_code == 404
+
         #test wrong content type
         resp = client.put(self.RESOURCE_URL, data=json.dumps(valid))
         assert resp.status_code == 415
@@ -460,11 +482,16 @@ class TestCollection(object):
         #not exist collection
         resp = client.delete(self.INVALID_URL)
         assert resp.status_code == 404
+        #not exist user
+        resp = client.delete(self.INVALID_URL_NOUSER)
+        assert resp.status_code == 404
 
 class TestRecipe(object):
 
     RESOURCE_URL = "/api/users/user-1/collections/Collection1-of-User1/1/"
     INVALID_URL = "/api/users/user-1/collections/Collection1-of-User1/10/"
+    INVALID_URL_NOUSER = "/api/users/no-user/collections/Collection1-of-User1/1/"
+    INVALID_URL_NOCOL = "/api/users/user-1/collections/Not-Collection-User1/1/"
 
     def test_get(self, client):
         """Tests for Recipe GET method"""
@@ -486,6 +513,10 @@ class TestRecipe(object):
 
         resp = client.get(self.INVALID_URL)
         assert resp.status_code == 404
+        resp = client.get(self.INVALID_URL_NOUSER)
+        assert resp.status_code == 404
+        resp = client.get(self.INVALID_URL_NOCOL)
+        assert resp.status_code == 404
 
     def test_put(self, client):
         """Tests for Recipe PUT method"""
@@ -494,9 +525,17 @@ class TestRecipe(object):
         resp = client.put(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 204
 
-        #test not exist
+        #test recipe not exist
         valid = _get_recipe_json()
         resp = client.put(self.INVALID_URL, json=valid)
+        assert resp.status_code == 404
+
+        #test user not exist
+        resp = client.put(self.INVALID_URL_NOUSER, json=valid)
+        assert resp.status_code == 404
+
+        #test collection ot exist
+        resp = client.put(self.INVALID_URL_NOCOL, json=valid)
         assert resp.status_code == 404
 
         #test invalid content type
@@ -531,7 +570,14 @@ class TestRecipe(object):
         assert resp.status_code == 204
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 404
+        #test recipe not exist
         resp = client.delete(self.INVALID_URL)
+        assert resp.status_code == 404
+        #test user not exist
+        resp = client.delete(self.INVALID_URL_NOUSER)
+        assert resp.status_code == 404
+        #test collection not exist
+        resp = client.delete(self.INVALID_URL_NOCOL)
         assert resp.status_code == 404
 
 class TestAllCategories(object):

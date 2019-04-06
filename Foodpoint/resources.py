@@ -14,12 +14,12 @@ import json
 Class for constructing Mason document for Foodpoint related resource
 """
 class FoodpointBuilder(MasonBuilder):
-    
+
     @staticmethod
     def user_schema():
         '''
-        For validating required parameters and type 
-        of request to add or update user.  
+        For validating required parameters and type
+        of request to add or update user.
         '''
         schema = {
             "type": "object",
@@ -39,7 +39,7 @@ class FoodpointBuilder(MasonBuilder):
     @staticmethod
     def collection_schema():
         '''
-        For validating required parameters and type 
+        For validating required parameters and type
         of request to add or update Collection.
         '''
         schema = {
@@ -60,7 +60,7 @@ class FoodpointBuilder(MasonBuilder):
     @staticmethod
     def category_schema():
         '''
-        For validating required parameters and type 
+        For validating required parameters and type
         of request to add or update Category.
         '''
         schema = {
@@ -81,7 +81,7 @@ class FoodpointBuilder(MasonBuilder):
     @staticmethod
     def ethnicity_schema():
         '''
-        For validating required parameters and type 
+        For validating required parameters and type
         of request to add or update Ethincity.
         '''
         schema = {
@@ -102,7 +102,7 @@ class FoodpointBuilder(MasonBuilder):
     @staticmethod
     def recipe_schema():
         '''
-        For validating required parameters and type 
+        For validating required parameters and type
         of request to add or update recipe.
         '''
         schema = {
@@ -216,7 +216,7 @@ class FoodpointBuilder(MasonBuilder):
         '''
         For editing this user information
         Parameters:
-         - user: String, string to identify user        
+         - user: String, string to identify user
         '''
         self.add_control(
             "edit",
@@ -336,7 +336,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_add_category(self):
-        ''' 
+        '''
         Control For adding category
         '''
         self.add_control(
@@ -349,7 +349,7 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_add_ethnicity(self):
-        ''' 
+        '''
         Control For adding ethnicity
         '''
         self.add_control(
@@ -362,9 +362,9 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_edit_category(self, cat_name):
-        ''' 
+        '''
         Control of editing category.
-        Parameters: 
+        Parameters:
         - cat_name: String, string to identify category
         '''
         self.add_control(
@@ -377,9 +377,9 @@ class FoodpointBuilder(MasonBuilder):
         )
 
     def add_control_edit_ethnicity(self, eth_name):
-        ''' 
+        '''
         Control of editing ethincity.
-        Parameters: 
+        Parameters:
         - eth_name: String, string to identify ethincity
         '''
         self.add_control(
@@ -456,7 +456,7 @@ class AllUsers(Resource):
 class EachUser(Resource):
     """
     Resource class for representing particular user
-    """  
+    """
     def get(self, user):
         """
         Return all information of user (returns a Mason document) if found otherwise returns 404
@@ -511,7 +511,7 @@ class EachUser(Resource):
             return create_error_response(404, "User not found")
 
     def delete(self, user):
-        ''' 
+        '''
         Method used For deleting a user, returns 204 if successful, 404 if the the user didn't exist.
         Parameters:
         - user: String, name of user
@@ -527,7 +527,7 @@ class EachUser(Resource):
 #api.add_resource(CollectionsByUser, "/users/<user>/collections/")
 
 class CollectionsByUser(Resource):
-    ''' 
+    '''
     Resource Class for recipe collections of user
     '''
     def get(self, user):
@@ -647,7 +647,7 @@ class EachCollection(Resource):
 
     def post(self, user, col_name):
         """
-        Create a new recipe for collection of user returns 201 along with the Location header if successful. If not successful, will return 
+        Create a new recipe for collection of user returns 201 along with the Location header if successful. If not successful, will return
         either 415 if the request didn't have JSON as the content type, 400 if the JSON wasn't valid against the recipe schema,
         404 if user or collection not found and 409 if category or ethincity not found
         Parameters:
@@ -696,7 +696,7 @@ class EachCollection(Resource):
 
     def put(self, user, col_name):
         """
-        Mehtod used for editing collection of user returns 204  if successful. If not successful, will return 
+        Mehtod used for editing collection of user returns 204  if successful. If not successful, will return
         either 415 if the request didn't have JSON as the content type, 400 if the JSON wasn't valid against the collection schema and
         404 if user or collection not found
         Parameters:
@@ -732,7 +732,7 @@ class EachCollection(Resource):
             return create_error_response(404, "Collection not found")
 
     def delete(self, user, col_name):
-        ''' 
+        '''
         Method used For deleting collection user, returns 204 if successful, 404 if the the user or collection didn't exist.
         Parameters:
         - user: String, name of user
@@ -816,7 +816,7 @@ class AllCategories(Resource):
 class EachCategory(Resource):
     """
     Resource class for representing particular category
-    """  
+    """
     def get(self, cat_name):
         """
         Return all information of category (returns a Mason document) if found otherwise returns 404
@@ -938,7 +938,7 @@ class AllEthnicities(Resource):
 class EachEthnicity(Resource):
     """
     Resource class for representing particular ethnicity
-    """  
+    """
     def get(self, eth_name):
         """
         Return all information of ethnicity (returns a Mason document) if found otherwise returns 404
@@ -1014,7 +1014,7 @@ class EachRecipe(Resource):
         if findCol is None:
             return create_error_response(404, "Collection not found")
         target = Recipe.query.filter_by(id=recipe_id).first()
-        
+
         if target in findCol.recipes:
             findEthnicity = Ethnicity.query.filter_by(id=target.ethnicityId).first()
             findCategory = Category.query.filter_by(id=target.categoryId).first()
@@ -1037,11 +1037,11 @@ class EachRecipe(Resource):
             return Response(json.dumps(body), 200, mimetype=MASON)
         else :
             return create_error_response(404, "Recipe not found")
-        
+
 
     def put(self, user, col_name, recipe_id):
         """
-        Mehtod used for editing recipe of collection of user returns 204  if successful. If not successful, will return 
+        Method used for editing recipe of collection of user returns 204  if successful. If not successful, will return
         either 415 if the request didn't have JSON as the content type, 400 if the JSON wasn't valid against the recipe schema,
         404 if user or collection not found and 409 if category or ethincity not found
         Parameters:
@@ -1065,7 +1065,7 @@ class EachRecipe(Resource):
         findCol = Collection.query.filter_by(userId=finduser.id, name=col_name).first()
         if findCol is None:
             return create_error_response(404, "Collection not found")
-       
+
         findcategory = Category.query.filter_by(name=request.json["category"]).first()
         findethnicity = Ethnicity.query.filter_by(name=request.json["ethnicity"]).first()
         if findcategory is None:
@@ -1073,10 +1073,8 @@ class EachRecipe(Resource):
         findethnicity = Ethnicity.query.filter_by(name=request.json["ethnicity"]).first()
         if findethnicity is None:
             return create_error_response(409, "Ethnicity does not exist", "Ethnicity {} does not exist.".format(request.json["ethnicity"]))
-        
+
         target = Recipe.query.filter_by(id=recipe_id).first()
-        if target not in findCol.recipes:
-            return create_error_response(404, "Recipe not found")
         if (target in findCol.recipes):
             try:
                 target.rating = request.json["rating"]
@@ -1093,7 +1091,7 @@ class EachRecipe(Resource):
             return create_error_response(404, "Recipe not found")
 
     def delete(self, user, col_name, recipe_id):
-        ''' 
+        '''
         Method used For deleting recipe of collection of user, returns 204 if successful, 404 if the the user or collection or recipe didn't exist.
         Parameters:
         - user: String, name of user
@@ -1107,7 +1105,7 @@ class EachRecipe(Resource):
         if findCol is None:
             return create_error_response(404, "Collection not found")
         target = Recipe.query.filter_by(id=recipe_id).first()
-        
+
         if (target in findCol.recipes):
             db.session.delete(target)
             db.session.commit()

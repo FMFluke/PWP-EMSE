@@ -5,9 +5,10 @@ api = Api(api_bp)
 
 # this import must be placed after we create api to avoid issues with
 # circular imports
-from Foodpoint.resources import AllUsers, EachUser, CollectionsByUser, EachCollection, EachRecipe, AllCategories, EachCategory, AllEthnicities, EachEthnicity
+from Foodpoint.resources import AllUsers, EachUser, CollectionsByUser, EachCollection, EachRecipe, AllCategories, EachCategory, AllEthnicities, EachEthnicity, Entry
 
 #add route to each resources
+api.add_resource(Entry, "/")
 api.add_resource(AllUsers, "/users/")
 api.add_resource(EachUser, "/users/<user>/")
 api.add_resource(CollectionsByUser, "/users/<user>/collections/")
@@ -17,7 +18,3 @@ api.add_resource(AllCategories, "/categories/")
 api.add_resource(EachCategory, "/categories/<cat_name>/")
 api.add_resource(AllEthnicities, "/ethnicities/")
 api.add_resource(EachEthnicity, "/ethnicities/<eth_name>/")
-
-@api_bp.route("/")
-def entry_point():
-    return 404 #placeholder

@@ -16,7 +16,7 @@ All dependencies can be installed using `pip install` command followed by the na
 The database can be created by running the command `flask init-db` from the directory above the Foodpoint folder. Note that you need to export the `FLASK_APP` environment to Foodpoint folder before using this command. For example use `export FLASK_APP=Foodpoint`    
 Database will be created according to the configuration of the app which could be passed to function `create_app` in `__init__.py` inside Foodpoint folder by having a file `config.py`. Otherwise it will default to `development.db` hardcoded in the function. The created database will be empty.    
 
-To populate database with initial example values, run the command `flask populate_db`
+To populate database with initial example values, run the command `flask populate-db`
 
 If you want to populate it manually, you will need to import `populate_db.py` and utilise its functions there. These functions will point to the database file as configured in `create_app` function automatically.
 

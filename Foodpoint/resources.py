@@ -394,6 +394,14 @@ class FoodpointBuilder(MasonBuilder):
 """
 Resource classes for this api
 """
+class Entry(Resource):
+    """For entry point, has control to AllUsers"""
+    def get(self):
+        body = FoodpointBuilder()
+        body.add_namespace("fpoint", LINK_RELATIONS_URL)
+        body.add_control_all_users()
+        return Response(json.dumps(body), 200, mimetype=MASON)
+
 class AllUsers(Resource):
     """
     Resource class for representing list of all users

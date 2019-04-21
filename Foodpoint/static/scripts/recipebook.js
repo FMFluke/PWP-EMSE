@@ -126,7 +126,7 @@ function renderStartPage(body) {
     form.attr("action", body["@controls"]["fpoint:all-users"].href);
     form.append("<label>Enter username</label>");
     form.append("<input type='text' name='userName'>");
-    form.append("<input type='submit' name='submit' value='Enter'>");
+    form.append("<input type='submit' class='submitbutton' name='submit' value='Enter'>");
     form.submit(findUser);
     $("div.form").html(form);
 }

@@ -5,3 +5,6 @@ form label {
 form label:first-letter{
     text-transform: uppercase;
 }
+.submitbutton{
+    display:block;
+}

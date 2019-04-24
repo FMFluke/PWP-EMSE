@@ -3,7 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
-
+from flask import redirect
 db = SQLAlchemy()
 
 # Based on http://flask.pocoo.org/docs/1.0/tutorial/factory/#the-application-factory
@@ -46,14 +46,15 @@ def create_app(test_config=None):
     app.register_blueprint(api.api_bp)
 
     from Foodpoint.utils import LINK_RELATIONS_URL
+    from Foodpoint.utils import APIARY_URL
 
     @app.route(LINK_RELATIONS_URL)
     def namespace():
-        return "placeholder"
+        return redirect(APIARY_URL + "link-relations")
 
     @app.route("/profiles/<resource>/")
     def profile(resource):
-        return "placeholder"
+        return redirect(APIARY_URL + resource)
 
     @app.route("/recipebook/")
     def client():

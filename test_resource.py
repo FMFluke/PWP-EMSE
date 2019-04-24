@@ -75,6 +75,19 @@ def _check_namespace(client, response):
     resp = client.get(ns_href)
     assert resp.status_code == 200
 
+def _check_profile_get_method(ctrl, client, obj):
+    """
+    Checks a GET type control from a JSON object be it root document or an item
+    in a collection. Also checks that the URL of the control can be accessed
+    specially created for profile.
+
+    This function is adapted from example in exercise 3 testing part.
+    """
+
+    href = obj["@controls"][ctrl]["href"]
+    resp = client.get(href)
+    assert resp.status_code == 302
+
 def _check_control_get_method(ctrl, client, obj):
     """
     Checks a GET type control from a JSON object be it root document or an item
@@ -197,7 +210,7 @@ class TestAllUsers(object):
         _check_control_post_method("fpoint:add-user", client, _get_user_json(), body)
         for item in body["items"]:
             _check_control_get_method("self", client, item)
-            _check_control_get_method("profile", client, item)
+            _check_profile_get_method("profile", client, item)
             assert "name" in item
             assert "userName" in item
 
@@ -238,7 +251,7 @@ class TestUser(object):
         assert body["name"] == "User Name1"
         assert body["userName"] == "user-1"
         _check_namespace(client, body)
-        _check_control_get_method("profile", client, body)
+        _check_profile_get_method("profile", client, body)
         _check_control_get_method("fpoint:all-users", client, body)
         _check_control_get_method("fpoint:collections-by", client, body)
         #we don't want to change the unique userName when testing PUT otherwise we can't test delete because URL will be changed
@@ -312,7 +325,7 @@ class TestCollectionsByUser(object):
         _check_control_post_method("fpoint:add-collection", client, _get_collection_json(), body)
         for item in body["items"]:
             _check_control_get_method("self", client, item)
-            _check_control_get_method("profile", client, item)
+            _check_profile_get_method("profile", client, item)
             assert "name" in item
             assert "author" in item
 
@@ -363,13 +376,13 @@ class TestCollection(object):
         assert "author" in body
         assert len(body["items"]) == 2 #there are already two pre-added recipe
         _check_namespace(client, body)
-        _check_control_get_method("profile", client, body)
+        _check_profile_get_method("profile", client, body)
         _check_control_get_method("fpoint:collections-by", client, body)
         _check_control_post_method("fpoint:add-recipe", client, _get_recipe_json(), body)
         for item in body["items"]:
             assert "title" in item
             _check_control_get_method("self", client, item)
-            _check_control_get_method("profile", client, item)
+            _check_profile_get_method("profile", client, item)
         valid = _get_collection_json()
         valid["name"] = body["name"] #avoid changing url
         _check_control_put_method("edit", client, valid, body)
@@ -504,7 +517,7 @@ class TestRecipe(object):
         assert "ethnicity" in body
         assert "category" in body
         _check_namespace(client, body)
-        _check_control_get_method("profile", client, body)
+        _check_profile_get_method("profile", client, body)
         _check_control_get_method("collection", client, body)
         _check_control_get_method("fpoint:category", client, body)
         _check_control_get_method("fpoint:ethnicity", client, body)
@@ -595,7 +608,7 @@ class TestAllCategories(object):
         _check_control_post_method("fpoint:add-category", client, _get_category_json(), body)
         for item in body["items"]:
             _check_control_get_method("self", client, item)
-            _check_control_get_method("profile", client, item)
+            _check_profile_get_method("profile", client, item)
             assert "name" in item
             assert "description" in item
 
@@ -638,7 +651,7 @@ class TestCategory(object):
         body = json.loads(resp.data)
         assert body["name"] == "category1"
         _check_namespace(client, body)
-        _check_control_get_method("profile", client, body)
+        _check_profile_get_method("profile", client, body)
         _check_control_get_method("fpoint:all-categories", client, body)
         #test put without changing url
         valid = _get_category_json()
@@ -698,7 +711,7 @@ class TestAllEthnicities(object):
         _check_control_post_method("fpoint:add-ethnicity", client, _get_ethnicity_json(), body)
         for item in body["items"]:
             _check_control_get_method("self", client, item)
-            _check_control_get_method("profile", client, item)
+            _check_profile_get_method("profile", client, item)
             assert "name" in item
             assert "description" in item
 
@@ -741,7 +754,7 @@ class TestEthnicity(object):
         body = json.loads(resp.data)
         assert body["name"] == "ethnicity1"
         _check_namespace(client, body)
-        _check_control_get_method("profile", client, body)
+        _check_profile_get_method("profile", client, body)
         _check_control_get_method("fpoint:all-ethnicities", client, body)
         #test put without changing url
         valid = _get_ethnicity_json()

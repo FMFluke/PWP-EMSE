@@ -3,6 +3,7 @@ import json
 
 """----Constants----"""
 MASON = "application/vnd.mason+json"
+APIARY_URL = "https://foodpoint.docs.apiary.io/#reference/"
 ERROR_PROFILE = "/profiles/error/"
 USER_PROFILE = "/profiles/user/"
 CATEGORY_PROFILE= "/profiles/category/"

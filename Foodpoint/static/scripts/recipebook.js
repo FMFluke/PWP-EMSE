@@ -77,6 +77,7 @@ function renderForm(ctrl, submitFunction) {
     ctrl.schema.required.forEach(function (property) {
         $("input[name='" + property + "']").attr("required", true);
     });
+    form.append("<br/>")
     form.append("<input type='submit' name='submit' class='submitbutton' value='Submit'>");
     $("div.form").html(form);
 }
@@ -134,24 +135,24 @@ function getSubmittedCollection(data, status, jqxhr) {
 function collectionRow(item) {
     let link = "<a href='" +
                 item["@controls"].self.href +
-                "' onClick='followLink(event, this, renderCollection)'>show</a>";
+                "' onClick='followLink(event, this, renderCollection)'>View Collection</a>";
 
     let del = " <a href='" +
                 item["@controls"].self.href +
-                "' onClick='deleteResource(event, this)'>delete</a>";
+                "' onClick='deleteResource(event, this)'>Delete</a>";
     return "<tr><td>" + item.name +
-        "</td><td>" + link + del + "</td></tr>";
+        "</td><td>" + link + "</td> <td>" + del + "</td></tr>";
 }
 
 function recipeRow(item) {
     let link = "<a href='" +
                 item["@controls"].self.href +
-                "' onClick='followLink(event, this, renderRecipe)'>see details</a>";
+                "' onClick='followLink(event, this, renderRecipe)'>View Details</a>";
     let del = " <a href='" +
                 item["@controls"].self.href +
-                "' onClick='deleteResource(event, this)'>delete</a>";
+                "' onClick='deleteResource(event, this)'>Delete</a>";
     return "<tr><td>" + item.title +
-        "</td><td>" + link + del + "</td></tr>";
+        "</td><td>" + link + "</td><td>" + del + "</td></tr>";
 }
 
 function appendCollectionRow(body) {
@@ -215,7 +216,7 @@ function renderCollections(body) {
 
     $(".contentdata").html("<p>Below is your collections:</p>");
     $(".resulttable thead").html(
-        "<tr><th>Collection Name</th>><th>Actions</th></tr>"
+        "<tr><th>Collection Name</th>><th colspan='2'>Actions</th></tr>"
     );
     let tbody = $(".resulttable tbody");
     tbody.empty();
@@ -245,7 +246,7 @@ function renderCollection(body) {
     }
 
     $(".resulttable thead").html(
-        "<tr><th>Recipe title</th>><th>Actions</th></tr>"
+        "<tr><th>Recipe Title</th>><th colspan='2'>Actions</th></tr>"
     );
     let tbody = $(".resulttable tbody");
     tbody.empty();
@@ -260,10 +261,11 @@ function renderCollection(body) {
     //Keep URL in case need to refetch after editing collection
     CURRENT_URL = body["@controls"]["fpoint:collections-by"].href;
     let add_recipe_ctrl = body["@controls"]["add-recipe"];
+
     //TODO: add form for editing collection and add recipe <<need a way to switch between them as well since they all are in this page
     $(".contentbeforeform").html(
-        "<br><button type='button' name='editcollection'>Edit Collection</button>" +
-        "<button type='button' name='addrecipe'>Add Recipe</button><br>"
+        "<br><button type='button' name='editcollection' class='simplebutton'>Edit Collection</button>" +
+        "<br><button type='button' name='addrecipe' class='simplebutton'>Add Recipe</button><br>"
     );
 
     function form_edit_collection() {
@@ -346,6 +348,7 @@ function renderStartPage(body) {
     form.attr("action", body["@controls"]["fpoint:all-users"].href);
     form.append("<label>Enter username</label>");
     form.append("<input type='text' name='userName'>");
+    form.append("<br/>");
     form.append("<input type='submit' class='submitbutton' name='submit' value='Enter'>");
     form.submit(findUser);
     $("div.form").html(form);

@@ -49,7 +49,13 @@ function renderForm(ctrl, submitFunction) {
     Object.entries(ctrl.schema.properties).forEach(
         ([name, data]) => {
             form.append("<label>" + name + " ("+ data.description + " )</label>");
-            form.append("<input type='text' name='" + name + "'>");
+            if (name == 'description' || name == 'ingredients') {
+                //Long text fields
+                form.append("<textarea rows = '5' cols = '60' name =" + name +" ></textarea><br>");
+            }
+            else {
+                form.append("<input type='text' name='" + name + "'>");
+            }
         }
     );
     ctrl.schema.required.forEach(function (property) {
@@ -68,7 +74,6 @@ function submitUser(event) {
     data.userName = $("input[name='userName']").val();
     //update the URL to refetch
     CURRENT_URL = CURRENT_URL + data.userName + "/";
-    //TODO: replace with your function
     sendData(form.attr("action"), form.attr("method"), data, getSubmittedUser);
 }
 
@@ -90,7 +95,9 @@ function submitCollection(event) {
     let data = {};
     let form = $("div.form form");
     data.name = $("input[name='name']").val();
-    data.description = $("input[name='description']").val();
+    data.description = $("textarea[name='description']").val();
+
+    CURRENT_URL = CURRENT_URL + data.name + "/";
     //TODO: replace with your function
     sendData(form.attr("action"), form.attr("method"), data, getSubmittedCollection);
 }
@@ -99,7 +106,12 @@ function getSubmittedCollection(data, status, jqxhr) {
     renderMsg("Successful");
     let href = jqxhr.getResponseHeader("Location");
     if (href) {
+        //POST: append table
         getResource(href, appendCollectionRow);
+    }
+    else {
+        //PUT: refetch the collection to update control links
+        getResource(CURRENT_URL, renderCollection);
     }
 }
 
@@ -221,12 +233,29 @@ function renderCollection(body) {
     } else {
         $(".contentdata").append("<p>This collection has no recipes yet, add one.</p>");
     }
+    //Keep URL in case need to refetch after editing collection
+    CURRENT_URL = body["@controls"]["fpoint:collections-by"].href;
+    let add_recipe_ctrl = body["@controls"]["add-recipe"];
     //TODO: add form for editing collection and add recipe <<need a way to switch between them as well since they all are in this page
+    $(".contentbeforeform").html(
+        "<br><button type='button' name='editcollection'>Edit Collection</button>" +
+        "<button type='button' name='addrecipe'>Add Recipe</button><br>"
+    );
 
+    function form_edit_collection() {
+        renderForm(body["@controls"]["edit"], submitCollection);
+
+        //Pre-filled value
+        $("input[name='name']").val(body.name);
+        $("textarea[name='description']").val(body.description);
+    }
+
+    form_edit_collection(); //default form that will be rendered when page load is editing collection
+    $("button[name='addrecipe']").click(function () { renderForm(body["@controls"]["fpoint:add-recipe"], submitRecipe) });
+    $("button[name='editcollection']").click(form_edit_collection);
 }
 
 function renderRecipe(body) {
-    //TODO: implement
     $("div.navigation").html(
         "<a href='"+ body["@controls"]["collection"].href +"' onClick='followLink(event, this, renderCollection)'>Back</a>"
     );
@@ -237,12 +266,6 @@ function renderRecipe(body) {
     $(".contentbeforeform").empty();
 
     renderForm(body["@controls"]["edit"], submitRecipe);
-
-    //replace with textarea for long text fields
-    $("input[name='description']").before("<textarea rows = '5' cols = '60' name = 'description'></textarea><br>");
-    $("input[name='description']").remove();
-    $("input[name='ingredients']").before("<textarea rows = '5' cols = '60' name = 'ingredients'></textarea><br>")
-    $("input[name='ingredients']").remove()
 
     //Pre-fill value
     $("input[name='title']").val(body.title);

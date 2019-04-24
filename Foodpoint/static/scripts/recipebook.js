@@ -3,6 +3,7 @@
 const DEBUG = true;
 const MASONJSON = "application/vnd.mason+json";
 const PLAINJSON = "application/json";
+const API_ROOT = "http://localhost:5000/api/";
 
 let CURRENT_URL = "http://localhost:5000/api/"; //For reloading
 
@@ -31,6 +32,21 @@ function sendData(href, method, item, postProcessor) {
         contentType: PLAINJSON,
         processData: false,
         success: postProcessor,
+        error: renderError
+    });
+}
+
+function deleteResource(event, a) {
+    event.preventDefault();
+    let anchor = $(a);
+    $.ajax({
+        url: anchor.attr("href"),
+        type: "DELETE",
+        success: function() {
+            //Remove the row
+            renderMsg("Delete Successful");
+            anchor.closest('tr').fadeOut("fast");
+        },
         error: renderError
     });
 }
@@ -119,16 +135,23 @@ function collectionRow(item) {
     let link = "<a href='" +
                 item["@controls"].self.href +
                 "' onClick='followLink(event, this, renderCollection)'>show</a>";
+
+    let del = " <a href='" +
+                item["@controls"].self.href +
+                "' onClick='deleteResource(event, this)'>delete</a>";
     return "<tr><td>" + item.name +
-        "</td><td>" + link + "</td></tr>";
+        "</td><td>" + link + del + "</td></tr>";
 }
 
 function recipeRow(item) {
     let link = "<a href='" +
                 item["@controls"].self.href +
                 "' onClick='followLink(event, this, renderRecipe)'>see details</a>";
+    let del = " <a href='" +
+                item["@controls"].self.href +
+                "' onClick='deleteResource(event, this)'>delete</a>";
     return "<tr><td>" + item.title +
-        "</td><td>" + link + "</td></tr>";
+        "</td><td>" + link + del + "</td></tr>";
 }
 
 function appendCollectionRow(body) {
@@ -141,7 +164,7 @@ function appendRecipeRow(body) {
 
 function renderCreateUser(body) {
     $("div.navigation").html(
-        "<a href='http://localhost:5000/api/' onClick='followLink(event, this, renderStartPage)'>Back</a>"
+        "<a href='"+API_ROOT+"' onClick='followLink(event, this, renderStartPage)'>Back</a>"
     );
     $(".contenttitle").html("<h1>Create a new user</h1>");
     $(".contentdata").html("<p>Fill the form to create a new user. Your username must be unique.</p>");
@@ -208,6 +231,7 @@ function renderCollections(body) {
 }
 
 function renderCollection(body) {
+    $("div.notification").empty();
     $("div.navigation").html(
         "<a href='"+ body["@controls"]["fpoint:collections-by"].href +"' onClick='followLink(event, this, renderCollections)'>Back</a>"
     );
@@ -256,6 +280,7 @@ function renderCollection(body) {
 }
 
 function renderRecipe(body) {
+    $("div.notification").empty();
     $("div.navigation").html(
         "<a href='"+ body["@controls"]["collection"].href +"' onClick='followLink(event, this, renderCollection)'>Back</a>"
     );
@@ -327,5 +352,5 @@ function renderStartPage(body) {
 }
 
 $(document).ready(function () {
-    getResource("http://localhost:5000/api/", renderStartPage);
+    getResource(API_ROOT, renderStartPage);
 });

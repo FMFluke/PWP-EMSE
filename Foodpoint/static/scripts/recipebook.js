@@ -4,6 +4,8 @@ const DEBUG = true;
 const MASONJSON = "application/vnd.mason+json";
 const PLAINJSON = "application/json";
 
+let CURRENT_URL = "http://localhost:5000/api/"; //For reloading
+
 function renderError(jqxhr) {
     let msg = jqxhr.responseJSON["@error"]["@message"];
     $("div.notification").html("<p class='error'>" + msg + "</p>");
@@ -64,8 +66,23 @@ function submitUser(event) {
     let form = $("div.form form");
     data.name = $("input[name='name']").val();
     data.userName = $("input[name='userName']").val();
+    //update the URL to refetch
+    CURRENT_URL = CURRENT_URL + data.userName + "/";
     //TODO: replace with your function
-    //sendData(form.attr("action"), form.attr("method"), data, getSubmittedSensor);
+    sendData(form.attr("action"), form.attr("method"), data, getSubmittedUser);
+}
+
+function getSubmittedUser(data, status, jqxhr) {
+    renderMsg("Successful");
+    let href = jqxhr.getResponseHeader("Location");
+    if (href) {
+        //New user created, go to the user page
+        getResource(href, renderUserPage);
+    }
+    else {
+        //Refetch user
+        getResource(CURRENT_URL, renderUserPage);
+    }
 }
 
 function submitCollection(event) {
@@ -106,6 +123,10 @@ function appendCollectionRow(body) {
     $(".resulttable tbody").append(collectionRow(body));
 }
 
+function appendRecipeRow(body) {
+    $(".resulttable tbody").append(recipeRow(body));
+}
+
 function renderCreateUser(body) {
     $("div.navigation").html(
         "<a href='http://localhost:5000/api/' onClick='followLink(event, this, renderStartPage)'>Back</a>"
@@ -136,8 +157,13 @@ function renderUserPage(body) {
     $(".resulttable thead").empty();
     $(".resulttable tbody").empty();
 
+    $(".contentbeforeform").html("<p>Edit your user data</p>");
+
+    //keep URL for re-fetching after submission
+    CURRENT_URL = body["@controls"]["fpoint:all-users"].href;
     //render form for editing the user's profile
     renderForm(body["@controls"]["edit"], submitUser) //<<submitUser is not implemented completely yet
+
     //pre-fill with current data
     $("input[name='name']").val(body.name);
     $("input[name='userName']").val(body.userName);
@@ -181,6 +207,7 @@ function renderCollection(body) {
     else {
         $(".contentdata").empty();
     }
+
     $(".resulttable thead").html(
         "<tr><th>Recipe title</th>><th>Actions</th></tr>"
     );
@@ -194,7 +221,7 @@ function renderCollection(body) {
     } else {
         $(".contentdata").append("<p>This collection has no recipes yet, add one.</p>");
     }
-    //TODO: add form for editing collection and add recipe
+    //TODO: add form for editing collection and add recipe <<need a way to switch between them as well since they all are in this page
 
 }
 
@@ -248,10 +275,10 @@ function getSubmittedRecipe(data, status, jqxhr) {
     renderMsg("Successful");
     let href = jqxhr.getResponseHeader("Location");
     if (href) {
-        //POST: Append recipe row TODO: implement function appendRecipeRow
-        //getResource(href, appendCollectionRow);
+        //POST: Append recipe row (only response from POST will have Location header)
+        getResource(href, appendRecipeRow);
     } else {
-        //PUT: Just update the page content
+        //PUT: Just update the page content for recipe URLs does not change.
         $(".contenttitle").html("<h1>"+$("input[name='title']").val()+"</h1>");
         $(".contentdata").html("<p>Description: "+$("textarea[name='description']").val()+"</p>");
     }
@@ -263,6 +290,8 @@ function renderStartPage(body) {
     $(".contentdata").html("<p>Enter your username, or <a href='" +
     body["@controls"]["fpoint:all-users"].href +
     "' onClick='followLink(event, this, renderCreateUser)'>create a new user.</a></p>");
+
+    $(".contentbeforeform").empty();
 
     //form for login
     let form = $("<form>");

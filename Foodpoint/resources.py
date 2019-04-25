@@ -834,7 +834,8 @@ class EachCategory(Resource):
         target = Category.query.filter_by(name=cat_name).first()
         if (target):
             body = FoodpointBuilder(
-                name=target.name
+                name=target.name,
+                description=target.description
             )
             body.add_namespace("fpoint", LINK_RELATIONS_URL)
             body.add_control("self", api.url_for(EachCategory, cat_name=cat_name))
@@ -956,7 +957,8 @@ class EachEthnicity(Resource):
         target = Ethnicity.query.filter_by(name=eth_name).first()
         if (target):
             body = FoodpointBuilder(
-                name=target.name
+                name=target.name,
+                description=target.description
             )
             body.add_namespace("fpoint", LINK_RELATIONS_URL)
             body.add_control("self", api.url_for(EachEthnicity, eth_name=eth_name))

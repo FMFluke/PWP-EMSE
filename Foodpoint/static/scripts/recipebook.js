@@ -5,7 +5,7 @@ const MASONJSON = "application/vnd.mason+json";
 const PLAINJSON = "application/json";
 const API_ROOT = "http://localhost:5000/api/";
 
-let CURRENT_URL = "http://localhost:5000/api/"; //For reloading
+let CURRENT_URL = API_ROOT; //For reloading
 
 function renderError(jqxhr) {
     let msg = jqxhr.responseJSON["@error"]["@message"];
@@ -115,7 +115,6 @@ function submitCollection(event) {
     data.description = $("textarea[name='description']").val();
 
     CURRENT_URL = CURRENT_URL + data.name + "/";
-    //TODO: replace with your function
     sendData(form.attr("action"), form.attr("method"), data, getSubmittedCollection);
 }
 
@@ -155,12 +154,36 @@ function recipeRow(item) {
         "</td><td>" + link + "</td><td>" + del + "</td></tr>";
 }
 
+function categoryRow(item) {
+    let link = "<a href='" +
+                item["@controls"].self.href +
+                "' onClick='followLink(event, this, renderCategory)'>View Details</a>";
+    return "<tr><td>" + item.name +
+        "</td><td>" + link + "</td></tr>";
+}
+
+function ethnicityRow(item) {
+    let link = "<a href='" +
+                item["@controls"].self.href +
+                "' onClick='followLink(event, this, renderEthnicity)'>View Details</a>";
+    return "<tr><td>" + item.name +
+        "</td><td>" + link + "</td></tr>";
+}
+
 function appendCollectionRow(body) {
     $(".resulttable tbody").append(collectionRow(body));
 }
 
 function appendRecipeRow(body) {
     $(".resulttable tbody").append(recipeRow(body));
+}
+
+function appendCategoryRow(body) {
+    $(".resulttable tbody").append(categoryRow(body));
+}
+
+function appendEthnicityRow(body) {
+    $(".resulttable tbody").append(ethnicityRow(body));
 }
 
 function renderCreateUser(body) {
@@ -262,7 +285,6 @@ function renderCollection(body) {
     CURRENT_URL = body["@controls"]["fpoint:collections-by"].href;
     let add_recipe_ctrl = body["@controls"]["add-recipe"];
 
-    //TODO: add form for editing collection and add recipe <<need a way to switch between them as well since they all are in this page
     $(".contentbeforeform").html(
         "<br><button type='button' name='editcollection' class='simplebutton'>Edit Collection</button>" +
         "<br><button type='button' name='addrecipe' class='simplebutton'>Add Recipe</button><br>"
@@ -294,6 +316,14 @@ function renderRecipe(body) {
 
     renderForm(body["@controls"]["edit"], submitRecipe);
 
+    //Add links
+    $("input[name='category']").after(
+        "<a href='"+ body["@controls"]["fpoint:category"].href +"' onClick='followLink(event, this, renderCategory)'>See Details</a>"
+    );
+    $("input[name='ethnicity']").after(
+        "<a href='"+ body["@controls"]["fpoint:ethnicity"].href +"' onClick='followLink(event, this, renderEthnicity)'>See Details</a>"
+    );
+
     //Pre-fill value
     $("input[name='title']").val(body.title);
     $("textarea[name='description']").val(body.description);
@@ -302,6 +332,90 @@ function renderRecipe(body) {
     $("input[name='ethnicity']").val(body.ethnicity);
     $("input[name='category']").val(body.category);
 
+}
+
+function renderCategories(body) {
+    $("div.notification").empty();
+    $("div.navigation").html(
+        "<a href='"+ API_ROOT +"' onClick='followLink(event, this, renderStartPage)'>To Start Page</a>"
+    );
+    $(".contenttitle").html("<h1>List of categories</h1>");
+    $(".contentdata").html("<p>These are categories available. Click each appropriate link to see more details or edit. You can not delete a category.</p>");
+    $(".resulttable thead").html(
+        "<tr><th>Name</th>><th>Actions</th></tr>"
+    );
+
+    let tbody = $(".resulttable tbody");
+    tbody.empty();
+    if (body.items.length > 0) {
+        body.items.forEach(function (item) {
+            tbody.append(categoryRow(item));
+        });
+    }
+    $(".contentbeforeform").html("<p>Create a new category with the form below</p>");
+    renderForm(body["@controls"]["fpoint:add-category"], submitCategory);
+}
+
+function renderCategory(body) {
+    $("div.notification").empty();
+    $("div.navigation").html(
+        "<a href='"+ body["@controls"]["fpoint:all-categories"].href +"' onClick='followLink(event, this, renderCategories)'>All Categories</a>"
+    );
+    $(".contenttitle").html("<h1>"+body.name+"</h1>");
+    $(".contentdata").empty();
+    $(".resulttable thead").empty();
+    $(".resulttable tbody").empty();
+    $(".contentbeforeform").empty();
+
+    //Keep URL in case need to refetch after editing
+    CURRENT_URL = body["@controls"]["fpoint:all-categories"].href;
+
+    renderForm(body["@controls"]["edit"], submitCategory);
+    //Pre-fill value
+    $("input[name='name']").val(body.name);
+    $("textarea[name='description']").val(body.description);
+}
+
+function renderEthnicities(body) {
+    $("div.notification").empty();
+    $("div.navigation").html(
+        "<a href='"+ API_ROOT +"' onClick='followLink(event, this, renderStartPage)'>To Start Page</a>"
+    );
+    $(".contenttitle").html("<h1>List of ethnicities</h1>");
+    $(".contentdata").html("<p>These are ethnicities available. Click each appropriate link to see more details or edit. You can not delete an ethnicity.</p>");
+    $(".resulttable thead").html(
+        "<tr><th>Name</th>><th>Actions</th></tr>"
+    );
+
+    let tbody = $(".resulttable tbody");
+    tbody.empty();
+    if (body.items.length > 0) {
+        body.items.forEach(function (item) {
+            tbody.append(ethnicityRow(item));
+        });
+    }
+    $(".contentbeforeform").html("<p>Create a new ethnicity with the form below</p>");
+    renderForm(body["@controls"]["fpoint:add-ethnicity"], submitEthnicity);
+}
+
+function renderEthnicity(body) {
+    $("div.notification").empty();
+    $("div.navigation").html(
+        "<a href='"+ body["@controls"]["fpoint:all-ethnicities"].href +"' onClick='followLink(event, this, renderEthnicities)'>All Ethnicities</a>"
+    );
+    $(".contenttitle").html("<h1>"+body.name+"</h1>");
+    $(".contentdata").empty();
+    $(".resulttable thead").empty();
+    $(".resulttable tbody").empty();
+    $(".contentbeforeform").empty();
+
+    //Keep URL in case need to refetch after editing
+    CURRENT_URL = body["@controls"]["fpoint:all-ethnicities"].href;
+
+    renderForm(body["@controls"]["edit"], submitCategory);
+    //Pre-fill value
+    $("input[name='name']").val(body.name);
+    $("textarea[name='description']").val(body.description);
 }
 
 function submitRecipe(event) {
@@ -334,6 +448,56 @@ function getSubmittedRecipe(data, status, jqxhr) {
     }
 }
 
+function submitCategory(event) {
+    event.preventDefault();
+
+    let data = {};
+    let form = $("div.form form");
+    data.name = $("input[name='name']").val();
+    data.description = $("textarea[name='description']").val();
+    console.log(data.description);
+    CURRENT_URL = CURRENT_URL + data.name + "/";
+
+    sendData(form.attr("action"), form.attr("method"), data, getSubmittedCategory);
+}
+
+function getSubmittedCategory(data, status, jqxhr) {
+    renderMsg("Successful");
+    let href = jqxhr.getResponseHeader("Location");
+    if (href) {
+        //POST: Append recipe row (only response from POST will have Location header)
+        getResource(href, appendCategoryRow);
+    } else {
+        //PUT: Reload resource
+        getResource(CURRENT_URL, renderCategory);
+    }
+}
+
+function submitEthnicity(event) {
+    event.preventDefault();
+
+    let data = {};
+    let form = $("div.form form");
+    data.name = $("input[name='name']").val();
+    data.description = $("textarea[name='description']").val();
+    console.log(data.description);
+    CURRENT_URL = CURRENT_URL + data.name + "/";
+
+    sendData(form.attr("action"), form.attr("method"), data, getSubmittedEthnicity);
+}
+
+function getSubmittedEthnicity(data, status, jqxhr) {
+    renderMsg("Successful");
+    let href = jqxhr.getResponseHeader("Location");
+    if (href) {
+        //POST: Append recipe row (only response from POST will have Location header)
+        getResource(href, appendEthnicityRow);
+    } else {
+        //PUT: Reload resource
+        getResource(CURRENT_URL, renderEthnicity);
+    }
+}
+
 function renderStartPage(body) {
     $("div.navigation").empty();
     $(".contenttitle").html("<h1>Welcome</h1>");
@@ -342,6 +506,8 @@ function renderStartPage(body) {
     "' onClick='followLink(event, this, renderCreateUser)'>create a new user.</a></p>");
 
     $(".contentbeforeform").empty();
+    $(".resulttable thead").empty();
+    $(".resulttable tbody").empty();
 
     //form for login
     let form = $("<form>");

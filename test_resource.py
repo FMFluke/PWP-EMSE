@@ -73,7 +73,7 @@ def _check_namespace(client, response):
 
     ns_href = response["@namespaces"]["fpoint"]["name"]
     resp = client.get(ns_href)
-    assert resp.status_code == 200
+    assert resp.status_code == 302
 
 def _check_profile_get_method(ctrl, client, obj):
     """

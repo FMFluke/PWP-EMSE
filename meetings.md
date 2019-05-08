@@ -57,18 +57,19 @@ Some suggestions were mentioned about adding more relations between Ethnicity an
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*
 
 ## Meeting 4.
-* **DATE:**
-* **ASSISTANTS:**
+* **DATE:**29/04/2019 12:00
+* **ASSISTANTS:** Mika Oja
 * **GRADE:** *To be filled by course staff*
 
 ### Minutes
 *Summary of what was discussed during the meeting* 
 
-
+The project progress has reported and course assistant raised some concerns, but we were able to show that we have already work with the concerns raised. Much discussion didn't happened and we ended the meeting on agreement of seeing in the final meeting.
 
 ### Action points
 *List here the actions points discussed with assistants*
 
+Discussed about the functionalities needed to be implemented for the final deliverables. And started working on it.
 
 ### Comments from staff
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*

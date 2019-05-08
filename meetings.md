@@ -57,7 +57,7 @@ Some suggestions were mentioned about adding more relations between Ethnicity an
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*
 
 ## Meeting 4.
-* **DATE:**29/04/2019 12:00
+* **DATE:** 29/04/2019 12:00
 * **ASSISTANTS:** Mika Oja
 * **GRADE:** *To be filled by course staff*
 

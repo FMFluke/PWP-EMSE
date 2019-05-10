@@ -64,12 +64,12 @@ Some suggestions were mentioned about adding more relations between Ethnicity an
 ### Minutes
 *Summary of what was discussed during the meeting* 
 
-The project progress has reported and course assistant raised some concerns, but we were able to show that we have already work with the concerns raised. Much discussion didn't happened and we ended the meeting on agreement of seeing in the final meeting.
+The project progress has been reported and course assistant raised some concerns, but we were able to show that we have already work with the concerns raised. Course assistant also went through the code and give some comments about different styles used. Result of test cases and coverage was also shown, since it was not included in the README at the time. Much discussion didn't happened and we ended the meeting on agreement of seeing in the final meeting.
 
 ### Action points
 *List here the actions points discussed with assistants*
 
-Discussed about the functionalities needed to be implemented for the final deliverables. And started working on it.
+Add test coverage, Discussed about the functionalities needed to be implemented for the final deliverables. And started working on it.
 
 ### Comments from staff
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*

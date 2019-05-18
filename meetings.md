@@ -69,7 +69,7 @@ The project progress has been reported and course assistant raised some concerns
 ### Action points
 *List here the actions points discussed with assistants*
 
-Add test coverage, Discussed about the functionalities needed to be implemented for the final deliverables. And started working on it.
+Mika advised us to add test coverage, and discussed about the functionalities needed to be implemented for the final deliverables and we started working on it.
 
 ### Comments from staff
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*
@@ -91,16 +91,19 @@ Add test coverage, Discussed about the functionalities needed to be implemented 
 
 
 ## Final meeting
-* **DATE:**
-* **ASSISTANTS:**
+* **DATE:** 16.05.2019, 15.00
+* **ASSISTANTS:** Mika Oja
 * **GRADE:** *To be filled by course staff*
 
 ### Minutes
 *Summary of what was discussed during the meeting*
 
+In the final meeting of the project, we had discusssed and presented the functioning of our API. After that, Mika guided as through the merits and demerits of the project and explained what all minute details we have missed while implementing the project. He explained also about the possibilities of our grades for the course and expressed a good impression about the project. Furthermore, we discussed about what all nominal parts we need to improve for meeting the industrial standards of an API.
+
 ### Action points
 *List here the actions points discussed with assistants*
 
+The course assistant sugested some parts we missed like making the client navigation more coherent, Adding better headers in documentation, the good practice of adding quotes about classes inside the classes(We added before some classes), and also  mentioning of resources in the code itself.  
 
 ### Comments from staff
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*

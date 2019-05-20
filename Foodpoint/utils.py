@@ -20,6 +20,7 @@ class MasonBuilder(dict):
     elements into the object but mostly is just a parent for the much more
     useful subclass defined next. This class is generic in the sense that it
     does not contain any application specific implementation details.
+    This class is adapted from Exercise work.
     """
 
     def add_error(self, title, details):
@@ -78,7 +79,9 @@ class MasonBuilder(dict):
         self["@controls"][ctrl_name]["href"] = href
 
 
-"""----Convenience functions----"""
+"""----Convenience functions----
+ This function is adapted from Exercise work.
+"""
 def create_error_response(status_code, title, message=None):
     resource_url = request.path
     body = MasonBuilder(resource_url=resource_url)

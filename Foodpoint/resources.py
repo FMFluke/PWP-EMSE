@@ -10,10 +10,12 @@ from Foodpoint.api import api
 from Foodpoint import db
 import json
 
+
+class FoodpointBuilder(MasonBuilder):
+    
 """
 Class for constructing Mason document for Foodpoint related resource
 """
-class FoodpointBuilder(MasonBuilder):
 
     @staticmethod
     def user_schema():

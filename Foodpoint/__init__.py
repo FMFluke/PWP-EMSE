@@ -8,6 +8,7 @@ db = SQLAlchemy()
 
 # Based on http://flask.pocoo.org/docs/1.0/tutorial/factory/#the-application-factory
 # Modified to use Flask SQLAlchemy
+#This function is adapted from Exercise work.
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True, static_folder="static")
     app.config.from_mapping(

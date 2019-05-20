@@ -6,16 +6,16 @@ const PLAINJSON = "application/json";
 const API_ROOT = "http://localhost:5000/api/";
 
 let CURRENT_URL = API_ROOT; //For reloading
-
+//This function is adapted from Exercise work.
 function renderError(jqxhr) {
     let msg = jqxhr.responseJSON["@error"]["@message"];
     $("div.notification").html("<p class='error'>" + msg + "</p>");
 }
-
+//This function is adapted from Exercise work.
 function renderMsg(msg) {
     $("div.notification").html("<p class='msg'>" + msg + "</p>");
 }
-
+//This function is adapted from Exercise work.
 function getResource(href, renderer) {
     $.ajax({
         url: href,
@@ -23,7 +23,7 @@ function getResource(href, renderer) {
         error: renderError
     });
 }
-
+//This function is adapted from Exercise work.
 function sendData(href, method, item, postProcessor) {
     $.ajax({
         url: href,
@@ -35,7 +35,7 @@ function sendData(href, method, item, postProcessor) {
         error: renderError
     });
 }
-
+//This function is adapted from Exercise work.
 function deleteResource(event, a) {
     event.preventDefault();
     let anchor = $(a);
@@ -50,7 +50,7 @@ function deleteResource(event, a) {
         error: renderError
     });
 }
-
+//This function is adapted from Exercise work.
 function followLink(event, a, renderer) {
     event.preventDefault();
     getResource($(a).attr("href"), renderer);
@@ -519,7 +519,7 @@ function renderStartPage(body) {
     form.submit(findUser);
     $("div.form").html(form);
 }
-
+//These line of code are adapted from Exercise work.
 $(document).ready(function () {
     getResource(API_ROOT, renderStartPage);
 });
